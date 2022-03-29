@@ -7,26 +7,29 @@ This file is for PC module
         the PC here is 6bit width
     - ce_o is 
 */
+`include "defines.v"
+
 
 module pc_reg (
     input wire clk_i,
     input wire rst_i,
-    output reg[5:0] pc_o,
+    output reg[`InstAddrBus] pc_o,
     output reg ce_o
 );
     always @(posedge clk_i) begin
-        if (rst_i) begin
-            ce_o <= 1'b0;
+        // if reset enable, then Chip disable
+        if (rst_i == `RstEnable) begin //可能有問題
+            ce_o <= `ChipDisable;
         end else begin
-            ce_o <= 1'b1; // if we don't reset,, ce_o value will be 1 at most of the time
+            ce_o <= `ChipEnable;
         end
     end
 
     always @(posedge clk_i) begin
-        if (ce_o) begin
-            pc_o <= pc_o + 1'b1;
+        if (ce_o == `ChipEnable) begin
+            pc_o <= pc_o + 1'h1;
         end else begin
-            pc_o <= 6'b000000;
+            pc_o <= `CpuResetAddr;
         end
     end
     

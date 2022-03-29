@@ -15,7 +15,8 @@ module inst_fetch_tb;
         $dumpvars(1);
         rst = 1'b1;
 
-        #195 rst = 1'b0;
+        #200 rst = 1'b0;
+        #900 $finish;
         #1000 $stop;
     end
 

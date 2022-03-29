@@ -6,7 +6,7 @@ module inst_fetch (
     input wire clk_i,
     output wire[31:0] inst_o
 );
-    wire[5:0] pc_wire;
+    wire[31:0] pc_wire;
     wire ce_wire;
 
     pc_reg pc_reg0(
