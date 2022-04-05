@@ -10,27 +10,25 @@ as some embedding system always do. (not sure about that)
     - rom reprecent the rom, in here we have 64x32bit
 */
 
+`include "defines.v"
 
 module rom (
-    input wire ce_i,
-    input wire[31:0] addr_i,
-    output reg[31:0] inst_o
+    input wire ce,
+    input wire[`InstAddrBus] addr,
+    output reg[`InstBus] inst
 );
-    reg[31:0] rom[63:0];
 
-    initial $readmemh("data/rom.data", rom);
-    integer i;
-    initial begin
-    $display("data:");
-        for(i=0;i<9;i=i+1)
-            $display("%d:%h",i,rom[i]);   
-    end
-    
+    reg[`InstBus] inst_mem[0:`InstMemNum-1];
+
+    //.initial $readmemh("inst_rom.data", inst_mem);
+
     always @(*) begin
-        if(ce_i) begin
-            inst_o = rom[addr_i];
+        if (ce == `ChipDisable) begin
+            inst <= `ZeroWord;
         end else begin
-            inst_o = 32'h0;
-        end
-    end
+            inst <= inst_mem[addr[`InstMemNumLog2+1:2]];
+        end// if
+    end//always
 endmodule
+/* old
+*/

@@ -18,6 +18,9 @@
 `define RegBus 31:0
 `define AluOpBus 7:0
 
+// temp
+`define HalfRegBus 15:0
+
 // common regs
 `define RegNum 32        // reg num
 `define RegNumLog2 5
