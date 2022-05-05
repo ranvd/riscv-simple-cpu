@@ -18,6 +18,7 @@ module pc_reg(
         end//if
     end//always
     
+    /* 我認為這裡可以改成 將 pc_next 刪掉，將 posedge ce_o 放到 always 裡面做判斷*/
     always @(posedge ce_o) begin
         pc_o <= `CpuResetAddr; 
     end

@@ -8,7 +8,7 @@ module id(
     input wire[`InstBus] inst_i,
     
     //from regfile *還沒 implement 我也不知道為什麼需要
-    input wire[`RegBus] reg1_rdata_i,
+    input wire[`RegBus] reg1_rdata_i, // 先保留 不知道功能
     input wire[`RegBus] reg2_rdata_i,
        
     // to regfile
@@ -19,10 +19,10 @@ module id(
     
     //to id_exe
     output reg[`AluOpBus] aluOp_o,
-    output reg[`RegBus] op1_o,
+    output reg[`RegBus] op1_o, // 目前 ori 和上面工面 reg1_rdata_i 的值一樣。
     output reg[`RegBus] op2_o,
     output reg reg_we_o,
-    output reg[`RegAddrBus] reg_waddr_o
+    output reg[`RegAddrBus] reg_waddr_o //這裡是 rd，會往 id_exe 送是因為 5 stage 架構的原因。
     );
     
     wire[6:0] opcode = inst_i[6:0];
