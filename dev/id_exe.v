@@ -1,16 +1,14 @@
-`include "defines.v"
-
-module id_exe(
+module id_exe (
     input wire rst_i,
     input wire clk_i,
-    
-    // from id
+
+    //from id
     input wire[`RegBus] op1_i,
     input wire[`RegBus] op2_i,
     input wire reg_we_i,
     input wire[`RegAddrBus] reg_waddr_i,
     input wire[`AluOpBus] aluOp_i,
-    
+
     //to exe
     output reg[`RegBus] op1_o,
     output reg[`RegBus] op2_o,
@@ -18,7 +16,6 @@ module id_exe(
     output reg[`RegAddrBus] reg_waddr_o,
     output reg[`AluOpBus] aluOp_o
 );
-
     always @(posedge clk_i) begin
         if (rst_i == `RstEnable) begin
             aluOp_o <= `NOP;
@@ -32,6 +29,6 @@ module id_exe(
             op2_o <= op2_i;
             reg_we_o <= reg_we_i;
             reg_waddr_o <= reg_waddr_i;
-        end//if
-    end //always
+        end
+    end
 endmodule

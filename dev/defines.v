@@ -22,8 +22,10 @@
 `define RegNum 32        // reg num
 `define RegNumLog2 5
 
-// data size
-`define Word 3'h1
+// number of rom
+`define InstMemNum 64
+
+
 // RV32I inst num
 //`define LUI 8'h0
 //`define AUIPC 8'h1

@@ -1,5 +1,3 @@
-`include "defines.v"
-
 module id(
     input wire rst_i,
     
@@ -7,8 +5,8 @@ module id(
     input wire[`InstAddrBus] inst_addr_i,
     input wire[`InstBus] inst_i,
     
-    //from regfile *還沒 implement 我也不知道為什麼需要
-    input wire[`RegBus] reg1_rdata_i, // 先保留 不知道功能
+    //from regfile
+    input wire[`RegBus] reg1_rdata_i,
     input wire[`RegBus] reg2_rdata_i,
        
     // to regfile
@@ -19,10 +17,10 @@ module id(
     
     //to id_exe
     output reg[`AluOpBus] aluOp_o,
-    output reg[`RegBus] op1_o, // 目前 ori 和上面工面 reg1_rdata_i 的值一樣。
+    output reg[`RegBus] op1_o,
     output reg[`RegBus] op2_o,
     output reg reg_we_o,
-    output reg[`RegAddrBus] reg_waddr_o //這裡是 rd，會往 id_exe 送是因為 5 stage 架構的原因。
+    output reg[`RegAddrBus] reg_waddr_o
     );
     
     wire[6:0] opcode = inst_i[6:0];
@@ -54,8 +52,8 @@ module id(
                             reg2_raddr_o <= `ZeroReg;
                             reg1_re_o <= `ReadEnable;
                             reg2_re_o <= `ReadDisable;
-                            op1_o <= reg1_rdata_i;
-                            op2_o <= {{20{inst_i[31]}}, inst_i[31:20]}; // immi value, sign extention
+                            op1_o <= reg1_rdata_i;          //這邊就直接輸出？
+                            op2_o <= {{20{inst_i[31]}}, inst_i[31:20]};  //immediate value
                             aluOp_o <= `ORI;         
                         end//INST_ORI
                         default: begin
