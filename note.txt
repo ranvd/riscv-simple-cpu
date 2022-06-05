@@ -1,0 +1,7 @@
+老師的整合筆記：
+https://hackmd.io/cvviGJh3TXq8mJk5vpD8GQ?view
+
+我使用的方式與老師不太相同，由於我不太懂 linker script 的撰寫方式，
+而且如果只是要簡單的測試，應該是不用寫到 linker script 這麼詳細。
+
+因此我只使用 makefile 做整合，有空需要再補齊 linker script 的知識！！

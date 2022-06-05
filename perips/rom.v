@@ -3,7 +3,7 @@ module rom (
     input wire [`InstAddrBus] addr_i,
     output reg[`InstBus] inst_o
 );
-    reg[`InstBus] inst_mem[0:`InstMemNum-1];   // 不懂老師為什麼這邊要將 0 設為 MSB 
+    reg[`InstBus] inst_mem[0:`InstMemNum-1];   // 不懂老師為什麼這邊要將 0 設為 MSB // 懂了
 
     always @(*) begin
         if (ce_i == 1'b0) begin

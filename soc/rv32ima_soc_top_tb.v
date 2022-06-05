@@ -17,7 +17,7 @@ module rv32ima_soc_tb();
 
         rst = `RstEnable;
         #195 rst = `RstDisable;
-        #1000 $stop;
+        #1000 $finish;
     end
 
     rv32ima_soc_top rv32ima_top0(
