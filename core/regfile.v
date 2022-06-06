@@ -40,7 +40,7 @@ module regfile (
             rdata1_o <= `ZeroWord;
         end else if (raddr1_i == waddr_i && we_i == `WriteEnable && re1_i == `ReadEnable) begin
             rdata1_o <= wdata_i;
-        end else if (re1_i == `ReadEnable) begin  // 我認為這行應該不用
+        end else if (re1_i == `ReadEnable) begin  // 我認為這行應該不用 // 歐 沒有這行要 這邊就是在做讀取 regfile 裡面的資料
             rdata1_o <= regs[raddr1_i];
         end else begin
             rdata1_o <= `ZeroWord;

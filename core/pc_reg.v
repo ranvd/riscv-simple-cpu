@@ -1,5 +1,6 @@
 /*
  * PC register and move to next instr(add word)
+ * pc_reg沒有照著老師寫，如果到時候出問題要記得會去看老師的
 */
 
 module pc_reg (
@@ -8,7 +9,6 @@ module pc_reg (
     output reg[`InstAddrBus] pc_o,
     output reg ce_o       //the output used to control the fetch instuction or not.
 );
-    
     always @(posedge clk_i) begin
         if (rst_i == `RstEnable) begin
             ce_o <= `ChipDisable;
