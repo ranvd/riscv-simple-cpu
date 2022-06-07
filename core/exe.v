@@ -29,6 +29,31 @@ module exe (
                     reg_wdata_o <= op1_i | op2_i;
                     reg_we_o <= `WriteEnable;
                 end
+                `ADDI: begin
+                    reg_waddr_o <= reg_waddr_i;
+                    reg_wdata_o <= op1_i + op2_i; //TODO: 要檢查 overflow 使用 $signed() 內建函式式沒用的
+                    reg_we_o <= `WriteEnable;
+                end
+                `ANDI: begin
+                    reg_waddr_o <= reg_waddr_i;
+                    reg_wdata_o <= op1_i & op2_i;
+                    reg_we_o <= `WriteEnable;
+                end
+                `XORI: begin
+                    reg_waddr_o <= reg_waddr_i;
+                    reg_wdata_o <= op1_i ^ op2_i;
+                    reg_we_o <= `WriteEnable;
+                end
+                `SLTI: begin
+                    reg_waddr_o <= reg_waddr_i;
+                    reg_wdata_o <= {32{~op1_ge_op2_signed}} & 32'h1;
+                    reg_we_o <= `WriteEnable;
+                end
+                `SLTIU: begin
+                    reg_waddr_o <= reg_waddr_i;
+                    reg_wdata_o <= {32{~op1_ge_op2_unsigned}} & 32'h1;
+                    reg_we_o <= `WriteEnable;
+                end
                 default: begin
                     reg_waddr_o <= `ZeroReg;
                     reg_wdata_o <= `ZeroWord;

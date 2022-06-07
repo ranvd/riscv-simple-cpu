@@ -73,7 +73,7 @@ module id(
                             imm <= {{20{inst_i[31]}}, inst_i[31:20]};
                             //op1_o <= reg1_rdata_i; //這兩行註解掉是因為這樣會有 data harzard
                             //op2_o <= {{20{inst_i[31]}}, inst_i[31:20]};
-                            aluOp_o <= `ORI;         
+                            //aluOp_o <= `INST_ORI;         
                         end//INST_ORI
                         default: begin
                             reg_we_o = `WriteDisable;
@@ -84,9 +84,13 @@ module id(
                             reg2_re_o <= `ReadDisable;
                             //op1_o <= `ZeroWord;
                             //op2_o <= `ZeroWord;
-                            aluOp_o <= `NOP;
+                            //aluOp_o <= `NOP;
                         end//default
+
+                        // 將 aluOp_o 移到這邊在做
                     endcase
+                    
+                    aluOp_o <= {funct3, opcode};
 		        end
                 default:begin
                         reg_we_o = `WriteDisable;
