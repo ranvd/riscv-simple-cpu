@@ -38,9 +38,9 @@ module regfile (
     always @(*) begin   //這裡使用 * 的原因是因為它不需要跟 clk 相關，而且在此設計中，regfile 與 id 會互相影響。
         if (raddr1_i == `ZeroReg) begin
             rdata1_o <= `ZeroWord;
-        end else if (raddr1_i == waddr_i && we_i == `WriteEnable && re1_i == `ReadEnable) begin
+        end else if (raddr1_i == waddr_i && we_i == `WriteEnable && re1_i == `ReadEnable) begin  //我認為這行應該不用，這行原本是用來解決相隔三個指令的 data hazard
             rdata1_o <= wdata_i;
-        end else if (re1_i == `ReadEnable) begin  // 我認為這行應該不用 // 歐 沒有這行要 這邊就是在做讀取 regfile 裡面的資料
+        end else if (re1_i == `ReadEnable) begin
             rdata1_o <= regs[raddr1_i];
         end else begin
             rdata1_o <= `ZeroWord;

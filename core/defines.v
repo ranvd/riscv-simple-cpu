@@ -45,15 +45,15 @@
 //`define SB 8'hf
 //`define SH 8'h10
 //`define SW 8'h11
-//`define ADDI 8'h12
-//`define SLTI 8'h13
-//`define SLTIU 8'h14
-//`define XORI 8'h15
+`define ADDI 8'h12
+`define SLTI 8'h13
+`define SLTIU 8'h14
+`define XORI 8'h15
 `define ORI 8'h16
-//`define ANDI 8'h17
-//`define SLLI 8'h18
-//`define SRLI 8'h19
-//`define SRAI 8'h1a
+`define ANDI 8'h17
+`define SLLI 8'h18 //先等等 這應該是 R-type 吧
+`define SRLI 8'h19 //這也是
+`define SRAI 8'h1a //這也是
 //`define ADD 8'h1b
 //`define SUB 8'h1c
 //`define SLL 8'h1d
@@ -84,4 +84,10 @@
 
 // I type inst
 `define INST_TYPE_I 7'b0010011
+`define INST_ADDI   3'b000
+`define INST_SLTI   3'b010
+`define INST_SLTIU  3'b011
+`define INST_XORI   3'b100
 `define INST_ORI    3'b110
+`define INST_ANDI   3'b111
+

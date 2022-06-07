@@ -79,13 +79,19 @@ module rv32IMACore(
     //ID
     id id0(
         .rst_i(rst_i),
-        
+
+        //from exe 解決 data hazard 用
+        .exe_reg_waddr_i(exe_reg_waddr_o), .exe_reg_wdata_i(exe_reg_wdata_o), .exe_reg_we_i(exe_reg_we_o),
+
+        //from mem 解決 data hazard 用
+        .mem_reg_waddr_i(mem_reg_waddr_o), .mem_reg_wdata_i(mem_reg_wdata_o), .mem_reg_we_i(mem_reg_we_o),
+
         //from if_id
         .inst_addr_i(id_inst_addr_i), .inst_i(id_inst_i),
         
         //from regfile
         .reg1_rdata_i(reg1_data), .reg2_rdata_i(reg2_data),
-        
+
         //to regfile
         .reg1_raddr_o(reg1_addr), .reg2_raddr_o(reg2_addr),
         .reg1_re_o(reg1_re), .reg2_re_o(reg2_re),

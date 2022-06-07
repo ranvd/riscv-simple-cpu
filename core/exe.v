@@ -13,6 +13,10 @@ module exe (
     output reg reg_we_o,
     output reg[`RegBus] reg_wdata_o
 );
+    wire op1_ge_op2_signed, op1_ge_op2_unsigned;
+    assign op1_ge_op2_signed = $signed(op1_i) >= $signed(op2_i);
+    assign op1_ge_op2_unsigned = op1_i >= op2_i;
+
     always @(*) begin
         if (rst_i == `RstEnable) begin
             reg_waddr_o <= `ZeroReg;
