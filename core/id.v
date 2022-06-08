@@ -61,7 +61,7 @@ module id(
             //op2_o <= `ZeroWord;
         end else begin
             case (opcode)
-                `INST_TYPE_I:begin
+                `INST_TYPE_I: begin
                     case (funct3)
                         `INST_ORI, `INST_ADDI, `INST_XORI, `INST_ANDI, `INST_SLTI, `INST_SLTIU: begin
                             reg_we_o <= `WriteEnable;
@@ -73,8 +73,18 @@ module id(
                             imm <= {{20{inst_i[31]}}, inst_i[31:20]};
                             //op1_o <= reg1_rdata_i; //這兩行註解掉是因為這樣會有 data harzard
                             //op2_o <= {{20{inst_i[31]}}, inst_i[31:20]};
-                            //aluOp_o <= `INST_ORI;         
+                            aluOp_o <= {funct3, opcode};    
                         end//INST_ORI
+                        `INST_SLLI, `INST_SRLI, `INST_SRAI: begin
+                            reg_we_o <= `WriteEnable;
+                            reg_waddr_o <= rd;
+                            reg1_raddr_o <= rs1;
+                            reg2_raddr_o <= `ZeroReg;
+                            reg1_re_o <= `ReadEnable;
+                            reg2_re_o <= `ReadDisable;
+                            imm <= {{27{1'b0}}, rs2[4:0]};
+                            aluOp_o <= {funct3, funct7};
+                        end
                         default: begin
                             reg_we_o = `WriteDisable;
                             reg_waddr_o <= `ZeroReg;
@@ -89,9 +99,21 @@ module id(
 
                         // 將 aluOp_o 移到這邊在做
                     endcase
-                    
-                    aluOp_o <= {funct3, opcode};
 		        end
+                `INST_TYPE_R: begin
+                    case (funct3)
+                        `INST_ADD, `INST_SUB, `INST_SLL, `INST_SLT, `INST_SLTU, 
+                        `INST_XOR, `INST_SRL, `INST_SRA, `INST_OR, `INST_AND: begin
+                            reg_we_o <= `WriteEnable;
+                            reg_waddr_o <= rd;
+                            reg1_raddr_o <= rs1;
+                            reg2_raddr_o <= rs2;
+                            reg1_re_o <= `ReadEnable;
+                            reg2_re_o <= `ReadEnable;
+                            aluOp_o <= {funct3, funct7};
+                        end
+                    endcase
+                end
                 default:begin
                         reg_we_o = `WriteDisable;
                         reg_waddr_o <= `ZeroReg;
