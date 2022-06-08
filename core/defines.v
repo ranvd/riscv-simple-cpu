@@ -10,6 +10,10 @@
 `define ReadDisable 1'b0
 `define ChipEnable 1'b1
 `define ChipDisable 1'b0
+`define JumpEnable 1'b1
+`define JumpDisable 1'b0
+`define FlushEnable 1'b1
+`define FlushDisable 1'b0
 
 // bus
 `define InstBus 31:0
@@ -23,8 +27,8 @@
 `define RegNumLog2 5
 
 // ROM
-`define InstMemNum 64
-`define InstMemAlign 15:0
+`define InstMemNum 256
+`define InstMemAlign 7:0
 
 // I type inst
 `define INST_TYPE_I 7'b0010011
@@ -37,6 +41,7 @@
 `define INST_SLLI   3'b001
 `define INST_SRLI   3'b101
 `define INST_SRAI   3'b101
+`define INST_JALR   3'b000  //這和 ADDI 重複了，但沒關係，opcode 不一樣
 
 
 // R type inst
@@ -52,21 +57,37 @@
 `define INST_OR     3'b110
 `define INST_AND    3'b111
 
+// S type inst
+
+// B type inst
+`define INST_TYPE_B 7'b1100011
+`define INST_BEQ    3'b000
+`define INST_BNE    3'b001
+`define INST_BLT    3'b100
+`define INST_BGE    3'b101
+`define INST_BLTU   3'b110
+`define INST_BGEU   3'b111
+
+// U type inst 因為 U type opcode 都不一樣
+`define INST_TYPE_U_LUI   7'b0110111
+`define INST_TYPE_U_AUIPC 7'b0010111
+
+
 // J type inst
 `define INST_TYPE_J 7'b1101111
 `define INST_JAL    3'b000 // J type 並沒有 funct3，這邊是我自己放上去的，只是方便看而已
 
 // -----------------------新的 aluOp 以 10 bit 定義。
-//`define LUI   10'b000_0110111 //    000 + opcode
-//`define AUIPC 10'b000_0010111 //    000 + opcode
+`define LUI   10'b000_0110111 //    000 + opcode
+`define AUIPC 10'b000_0010111 //    000 + opcode
 `define JAL   10'b000_1101111 //    000 + opcode
-//`define JALR  10'b000_1100111 //    000 + opcode
-//`define BEQ   10'b000_1100011 // funct3 + opcode
-//`define BNE   10'b001_1100011 // funct3 + opcode
-//`define BLT   10'b100_1100011 // funct3 + opcode
-//`define BGE   10'b101_1100011 // funct3 + opcode
-//`define BLTU  10'b110_1100011 // funct3 + opcode
-//`define BGEU  10'b111_1100011 // funct3 + opcode
+`define JALR  10'b000_1100111 //    000 + opcode
+`define BEQ   10'b000_1100011 // funct3 + opcode
+`define BNE   10'b001_1100011 // funct3 + opcode
+`define BLT   10'b100_1100011 // funct3 + opcode
+`define BGE   10'b101_1100011 // funct3 + opcode
+`define BLTU  10'b110_1100011 // funct3 + opcode
+`define BGEU  10'b111_1100011 // funct3 + opcode
 //`define LB    10'b000_0000011 // funct3 + opcode
 //`define LH    10'b001_0000011 // funct3 + opcode
 //`define LW    10'b010_0000011 // funct3 + opcode

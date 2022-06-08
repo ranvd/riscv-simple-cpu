@@ -9,7 +9,7 @@ module rom (
         if (ce_i == 1'b0) begin
             inst_o <= `ZeroWord;
         end else begin
-            inst_o <= {inst_mem[addr_i+1], inst_mem[addr_i]};
+            inst_o <= {inst_mem[addr_i+3],inst_mem[addr_i+2],inst_mem[addr_i+1], inst_mem[addr_i]};
         end
     end
 endmodule

@@ -29,11 +29,13 @@ module id(
     output reg reg2_re_o,
     
     //to id_exe
+    output reg[`InstAddrBus] inst_addr_o,
     output reg[`AluOpBus] aluOp_o,
     output reg[`RegBus] op1_o,
     output reg[`RegBus] op2_o,
     output reg reg_we_o,
-    output reg[`RegAddrBus] reg_waddr_o
+    output reg[`RegAddrBus] reg_waddr_o,
+    output reg[`RegBus] imm
     );
     
     wire[6:0] opcode = inst_i[6:0];
@@ -44,9 +46,11 @@ module id(
     wire[4:0] rs2 = inst_i[24:20];
 
     // 因為 immediate value 的位元並不固定，因此先宣告，等到確定後再做 signed extension
-    reg[`RegBus] imm;
+    //reg[`RegBus] imm; 變成輸出。
     
     always @(*) begin
+        inst_addr_o <= inst_addr_i;
+
         // 原本的 op1_o 和 op2_o 要在這一段裡面做
         // 但這樣會有 data hazard 因此改移到最後在決定。
         if (rst_i == `RstEnable) begin
@@ -63,7 +67,8 @@ module id(
             case (opcode)
                 `INST_TYPE_I: begin
                     case (funct3)
-                        `INST_ORI, `INST_ADDI, `INST_XORI, `INST_ANDI, `INST_SLTI, `INST_SLTIU: begin
+                        `INST_ORI, `INST_ADDI, `INST_XORI, `INST_ANDI, 
+                        `INST_SLTI, `INST_SLTIU, `INST_JALR: begin
                             reg_we_o <= `WriteEnable;
                             reg_waddr_o <= rd;
                             reg1_raddr_o <= rs1;
@@ -94,7 +99,7 @@ module id(
                             reg2_re_o <= `ReadDisable;
                             //op1_o <= `ZeroWord;
                             //op2_o <= `ZeroWord;
-                            //aluOp_o <= `NOP;
+                            aluOp_o <= `NOP;
                         end//default
 
                         // 將 aluOp_o 移到這邊在做
@@ -112,7 +117,60 @@ module id(
                             reg2_re_o <= `ReadEnable;
                             aluOp_o <= {funct3, funct7};
                         end
+                        default: begin
+                            reg_we_o = `WriteDisable;
+                            reg_waddr_o <= `ZeroReg;
+                            reg1_raddr_o <= `ZeroReg;
+                            reg1_re_o <= `ReadDisable;
+                            reg2_raddr_o <= `ZeroReg;
+                            reg2_re_o <= `ReadDisable;
+                            aluOp_o <= `NOP;
+                        end//default
                     endcase
+                end
+                `INST_TYPE_B: begin
+                    case(funct3)
+                        `INST_BEQ,`INST_BNE, `INST_BLT, `INST_BLTU, `INST_BGE, `INST_BGEU : begin
+                            reg_we_o <= `WriteDisable;
+                            reg_waddr_o <= `ZeroReg;
+                            reg1_raddr_o <= rs1;
+                            reg2_raddr_o <= rs2;
+                            reg1_re_o <= `ReadEnable;
+                            reg2_re_o <= `ReadEnable;
+                            imm <= {{20{inst_i[31]}}, inst_i[7], inst_i[30:25], inst_i[11:8], 1'b0};
+                            aluOp_o <= {funct3, opcode};
+                        end
+                        default: begin
+                            reg_we_o = `WriteDisable;
+                            reg_waddr_o <= `ZeroReg;
+                            reg1_raddr_o <= `ZeroReg;
+                            reg1_re_o <= `ReadDisable;
+                            reg2_raddr_o <= `ZeroReg;
+                            reg2_re_o <= `ReadDisable;
+                            aluOp_o <= `NOP;
+                        end//default
+                    endcase
+                end
+                `INST_TYPE_J: begin
+                    // 因為 J type 只有一個，所以就不再用 case 了
+                    reg_we_o <= `WriteEnable;
+                    reg_waddr_o <= rd;
+                    reg1_raddr_o <= `ZeroReg;
+                    reg2_raddr_o <= `ZeroReg;
+                    reg1_re_o <= `ReadDisable;
+                    reg2_re_o <= `ReadDisable;
+                    imm <= {{12{inst_i[31]}}, inst_i[19:12], inst_i[20], inst_i[30:25], inst_i[24:21], 1'b0};
+                    aluOp_o <= {3'b000, opcode};
+                end
+                `INST_TYPE_U_LUI, `INST_TYPE_U_AUIPC: begin
+                    reg_we_o <= `WriteEnable;
+                    reg_waddr_o <= rd;
+                    reg1_raddr_o <= `ZeroReg;
+                    reg2_raddr_o <= `ZeroReg;
+                    reg1_re_o <= `ReadDisable;
+                    reg2_re_o <= `ReadDisable;
+                    imm <= {inst_i[31:12], 12'b0};
+                    aluOp_o <= {3'b000, opcode};
                 end
                 default:begin
                         reg_we_o = `WriteDisable;
@@ -141,7 +199,7 @@ module id(
         end else if (reg1_re_o == `ReadEnable) begin
             op1_o <= reg1_rdata_i;
         end else if (reg1_re_o == `ReadDisable) begin
-            op1_o <= imm; //這行應該是不會用到拉
+            op1_o <= imm; //這行應該是不會用到拉 //我收回這句話，jal 用的到。
         end else begin
             op1_o <= `ZeroWord; //這行應該也是不會用到，但為了程式的安全，還是加一下
         end
