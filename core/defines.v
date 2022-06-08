@@ -24,7 +24,6 @@
 
 // number of rom
 `define InstMemNum 64
-`define NOP 10'h0   //addi x0,x0,0
 
 // I type inst
 `define INST_TYPE_I 7'b0010011
@@ -52,26 +51,29 @@
 `define INST_OR     3'b110
 `define INST_AND    3'b111
 
+// J type inst
+`define INST_TYPE_J 7'b1101111
+`define INST_JAL    3'b000 // J type 並沒有 funct3，這邊是我自己放上去的，只是方便看而已
 
 // -----------------------新的 aluOp 以 10 bit 定義。
-//`define LUI 8'h0
-//`define AUIPC 8'h1
-//`define JAL 8'h2
-//`define JALR 8'h3
-//`define BEQ 8'h4
-//`define BNE 8'h5
-//`define BLT 8'h6
-//`define BGE 8'h7
-//`define BLTU 8'h8
-//`define BGEU 8'h9
-//`define LB 8'ha
-//`define LH 8'hb
-//`define LW 8'hc
-//`define LBU 8'hd
-//`define LHU 8'he
-//`define SB 8'hf
-//`define SH 8'h10
-//`define SW 8'h11
+//`define LUI   10'b000_0110111 //    000 + opcode
+//`define AUIPC 10'b000_0010111 //    000 + opcode
+`define JAL   10'b000_1101111 //    000 + opcode
+//`define JALR  10'b000_1100111 //    000 + opcode
+//`define BEQ   10'b000_1100011 // funct3 + opcode
+//`define BNE   10'b001_1100011 // funct3 + opcode
+//`define BLT   10'b100_1100011 // funct3 + opcode
+//`define BGE   10'b101_1100011 // funct3 + opcode
+//`define BLTU  10'b110_1100011 // funct3 + opcode
+//`define BGEU  10'b111_1100011 // funct3 + opcode
+//`define LB    10'b000_0000011 // funct3 + opcode
+//`define LH    10'b001_0000011 // funct3 + opcode
+//`define LW    10'b010_0000011 // funct3 + opcode
+//`define LBU   10'b100_0000011 // funct3 + opcode
+//`define LHU   10'b101_0000011 // funct3 + opcode
+//`define SB    10'b000_0100011 // funct3 + opcode
+//`define SH    10'b001_0100011 // funct3 + opcode
+//`define SW    10'b010_0100011 // funct3 + opcode
 `define ADDI  10'b000_0010011 // funct3 + opcode  I-type
 `define SLTI  10'b010_0010011 // funct3 + opcode  I-type
 `define SLTIU 10'b011_0010011 // funct3 + opcode  I-type
@@ -91,16 +93,18 @@
 `define SRA   10'b101_0100000 // funct3 + funct7  R-type
 `define OR    10'b110_0000000 // funct3 + funct7  R-type
 `define AND   10'b111_0000000 // funct3 + funct7  R-type
-//`define FENCE 8'h25
-//`define ECALL 8'h26
-//`define EBREAK 8'h27
+//`define FENCE 10'b000_0001111
+//`define ECALL 10'b000_0010011 //特別指令，之後再設計
+//`define EBREAK 10'b000_0010011 //特別指令，之後再設計
 
 // M  extension
-//`define MUL 8'h28
-//`define MULH 8'h29
-//`define MULHSU 8'h2a
-//`define MULHU 8'h2b
-//`define DIV 8'h2c
-//`define DIVU 8'h2d
-//`define REM 8'h2e
-//`define REMU 8'h2f
+//`define MUL    10'b000_0110011
+//`define MULH   10'b001_0110011
+//`define MULHSU 10'b010_0110011
+//`define MULHU  10'b011_0110011
+//`define DIV    10'b100_0110011
+//`define DIVU   10'b101_0110011
+//`define REM    10'b110_0110011
+//`define REMU   10'b111_0110011
+
+`define NOP 10'b000_0010011   //addi x0,x0,0
