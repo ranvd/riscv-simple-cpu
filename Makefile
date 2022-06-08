@@ -20,7 +20,7 @@ $(TB): $(CORE)*.v $(PERIPS)*.v $(SOC)*.v
 	iverilog -o $(TB) $(CORE)*.v $(PERIPS)*.v $(SOC)*.v -I $(CORE)
 
 $(ROM): sim/rom.bin
-	hexdump -e '/4 "%08x \n"' $< > $@
+	hexdump -e '/2 "%04x \n"' $< > $@
 
 sim/rom.bin: sim/rom.o
 	$(OBJCOPY) -O binary $< $@

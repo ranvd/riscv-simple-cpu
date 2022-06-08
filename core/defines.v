@@ -22,8 +22,9 @@
 `define RegNum 32        // reg num
 `define RegNumLog2 5
 
-// number of rom
+// ROM
 `define InstMemNum 64
+`define InstMemAlign 15:0
 
 // I type inst
 `define INST_TYPE_I 7'b0010011

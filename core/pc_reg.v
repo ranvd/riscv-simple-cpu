@@ -21,7 +21,7 @@ module pc_reg (
         if (ce_o == `ChipDisable) begin
             pc_o <= `CpuResetAddr;
         end else begin
-            pc_o <= pc_o + 1'b1;
+            pc_o <= pc_o + 2'b10;
         end
     end
 
