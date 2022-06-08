@@ -9,81 +9,19 @@ module exe (
     input wire[`AluOpBus] aluOp_i,
     
     //to exe_mem
-    output reg[`RegAddrBus] reg_waddr_o,
-    output reg reg_we_o,
-    output reg[`RegBus] reg_wdata_o
-);
-    wire op1_ge_op2_signed, op1_ge_op2_unsigned;
-    assign op1_ge_op2_signed = $signed(op1_i) >= $signed(op2_i);
-    assign op1_ge_op2_unsigned = op1_i >= op2_i;
-    
-    initial begin
-        $monitor("reg_wdata_o: %04h", reg_wdata_o);
-    end
-    always @(*) begin
-        if (rst_i == `RstEnable) begin
-            reg_waddr_o <= `ZeroReg;
-            reg_wdata_o <= `ZeroWord;
-            reg_we_o <= `WriteDisable;
-        end else begin
-            case (aluOp_i)
-                `ORI, `OR: begin
-                    reg_waddr_o <= reg_waddr_i;
-                    reg_wdata_o <= op1_i | op2_i;
-                    reg_we_o <= `WriteEnable;
-                end
-                `ADDI, `ADD: begin
-                    reg_waddr_o <= reg_waddr_i;
-                    reg_wdata_o <= op1_i + op2_i; //TODO: 要檢查 overflow 使用 $signed() 內建函式式沒用的
-                    reg_we_o <= `WriteEnable;
-                end
-                `ANDI, `AND: begin
-                    reg_waddr_o <= reg_waddr_i;
-                    reg_wdata_o <= op1_i & op2_i;
-                    reg_we_o <= `WriteEnable;
-                end
-                `XORI, `XOR: begin
-                    reg_waddr_o <= reg_waddr_i;
-                    reg_wdata_o <= op1_i ^ op2_i;
-                    reg_we_o <= `WriteEnable;
-                end
-                `SLTI, `SLT: begin
-                    reg_waddr_o <= reg_waddr_i;
-                    reg_wdata_o <= {32{~op1_ge_op2_signed}} & 32'h1;
-                    reg_we_o <= `WriteEnable;
-                end
-                `SLTIU, `SLTU: begin
-                    reg_waddr_o <= reg_waddr_i;
-                    reg_wdata_o <= {32{~op1_ge_op2_unsigned}} & 32'h1;
-                    reg_we_o <= `WriteEnable;
-                end
-                `SLLI, `SLL: begin
-                    reg_waddr_o <= reg_waddr_i;
-                    reg_wdata_o <= op1_i << op2_i[4:0];
-                    reg_we_o <= `WriteEnable;
-                end
-                `SRLI, `SRL: begin
-                    reg_waddr_o <= reg_waddr_i;
-                    reg_wdata_o <= op1_i >> op2_i[4:0];
-                    reg_we_o <= `WriteEnable;
-                end
-                `SRAI, `SRA: begin
-                    reg_waddr_o <= reg_waddr_i;
-                    reg_wdata_o <= op1_i >>> op2_i[4:0];
-                    reg_we_o <= `WriteEnable;
-                end
-                `SUB: begin
-                    reg_waddr_o <= reg_waddr_i;
-                    reg_wdata_o <= op1_i - op2_i;
-                    reg_we_o <= `WriteEnable;
-                end
-                default: begin
-                    reg_waddr_o <= `ZeroReg;
-                    reg_wdata_o <= `ZeroWord;
-                    reg_we_o <= `WriteDisable;
-                end
-            endcase
-        end
-    end
+    output wire[`RegAddrBus] reg_waddr_o,
+    output wire reg_we_o,
+    output wire[`RegBus] reg_wdata_o
+);  
+    alu alu0(
+        .op1_i(op1_i),
+        .op2_i(op2_i),
+        .reg_we_i(reg_we_i),
+        .reg_waddr_i(reg_waddr_i),
+        .aluOp_i(aluOp_i),
+        .reg_waddr_o(reg_waddr_o),
+        .reg_we_o(reg_we_o),
+        .reg_wdata_o(reg_wdata_o)
+    );
     
 endmodule
