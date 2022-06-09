@@ -18,7 +18,7 @@ module rv32IMACore(
     wire[`InstBus] id_inst_i;
 
     // 連接 id 與 id_exe線
-    wire[`InstAddrBus] id_exe_inst_addr_i;
+    wire[`InstAddrBus] id_inst_addr_o;
     wire[`AluOpBus] id_aluOp_o;
     wire[`RegBus] id_op1_o;
     wire[`RegBus] id_op2_o;
@@ -47,20 +47,26 @@ module rv32IMACore(
     wire[`RegAddrBus] exe_reg_waddr_i;
     wire[`AluOpBus] exe_aluOp_i;
     wire[`RegBus] exe_imm_i;
+    wire exe_mem_we_i;
 
     //exe to exe_mem wire
-    wire[`InstAddrBus] exe_mem_inst_addr_i;
+    wire[`InstAddrBus] exe_inst_addr_o;
     wire exe_reg_we_o;
     wire[`RegAddrBus] exe_reg_waddr_o;
     wire[`RegBus] exe_reg_wdata_o;
+    wire[`StoreAddrBus] exe_mem_waddr_o;
+    wire exe_mem_we_o;
 
     //exe to ctrl
     wire jumpe_i;
+    wire[`AluOpBus] aluOp_i;
 
     //exe_mem to mem wire
     wire mem_reg_we_i;
     wire[`RegAddrBus] mem_reg_waddr_i;
     wire[`RegBus] mem_reg_wdata_i;
+    wire[`StoreAddrBus] mem_mem_waddr_i;
+    wire mem_mem_we_i;
 
     //exe_mem to pc wire
     wire[`InstAddrBus] exe_pc_jump_addr_i;
@@ -78,6 +84,8 @@ module rv32IMACore(
     wire id_exe_flush;
     //ctrl to exe_mem
     wire exe_mem_flush;
+    // ctrl to mem
+    wire[`AluOpBus] mem_ctrl;
 
 
     //pc
@@ -124,7 +132,7 @@ module rv32IMACore(
         .reg1_re_o(reg1_re), .reg2_re_o(reg2_re),
         
         //to id_exe
-        .inst_addr_o(id_exe_inst_addr_i),
+        .inst_addr_o(id_inst_addr_o),
         .aluOp_o(id_aluOp_o), .op1_o(id_op1_o),
         .op2_o(id_op2_o), .reg_we_o(id_reg_we_o),
         .reg_waddr_o(id_reg_waddr_o),
@@ -152,7 +160,7 @@ module rv32IMACore(
         //from ctrl unit
         .id_exe_flush(id_exe_flush),
         //from id
-        .inst_addr_i(id_exe_inst_addr_i),
+        .inst_addr_i(id_inst_addr_o),
         .aluOp_i(id_aluOp_o), .op1_i(id_op1_o),
         .op2_i(id_op2_o), .reg_we_i(id_reg_we_o),
         .reg_waddr_i(id_reg_waddr_o),
@@ -177,12 +185,14 @@ module rv32IMACore(
         .aluOp_i(exe_aluOp_i),
         .imm_i(exe_imm_i),
         //to exe_mem
-        .jump_addr_o(exe_mem_inst_addr_i),
+        .jump_addr_o(exe_inst_addr_o),
         .reg_waddr_o(exe_reg_waddr_o), .reg_we_o(exe_reg_we_o), 
         .reg_wdata_o(exe_reg_wdata_o),
+        .mem_addr_o(exe_mem_waddr_o),
 
         //to ctrl unit
-        .jumpe_o(jumpe_i)
+        .jumpe_o(jumpe_i),
+        .aluOp_o(aluOp_i)
     );
 
     //exe_mem
@@ -191,13 +201,15 @@ module rv32IMACore(
         //from ctrl unit
         .exe_mem_flush(exe_mem_flush),
         //from exe
-        .jump_addr_i(exe_mem_inst_addr_i),
+        .jump_addr_i(exe_inst_addr_o),
         .reg_waddr_i(exe_reg_waddr_o), .reg_we_i(exe_reg_we_o), 
         .reg_wdata_i(exe_reg_wdata_o),
+        .mem_addr_i(exe_mem_waddr_o),
         
         //to mem
         .reg_waddr_o(mem_reg_waddr_i), .reg_we_o(mem_reg_we_i), 
         .reg_wdata_o(mem_reg_wdata_i),
+        .mem_addr_o(mem_mem_waddr_i),
         
         //to PC
         .jump_addr_o(exe_pc_jump_addr_i)
@@ -206,10 +218,13 @@ module rv32IMACore(
     //mem
     mem mem0(
         .rst_i(rst_i),
-        
+        //from ctrl unit
+        .mem_ctrl_i(mem_ctrl),
         //from exe_mem
         .reg_waddr_i(mem_reg_waddr_i), .reg_we_i(mem_reg_we_i), 
         .reg_wdata_i(mem_reg_wdata_i),
+        .mem_addr_i(mem_mem_waddr_i),
+        .mem_we_i(mem_mem_we_i),
         
         //to mem_wb
         .reg_waddr_o(mem_reg_waddr_o), .reg_we_o(mem_reg_we_o), .reg_wdata_o(mem_reg_wdata_o)    
@@ -231,6 +246,7 @@ module rv32IMACore(
 
         //from exe
         .jumpe_i(jumpe_i),
+        .aluOp_i(aluOp_i),
         
         //to if_id
         .if_id_flush(if_id_flush),
@@ -239,6 +255,8 @@ module rv32IMACore(
         //to mem_exe
         .exe_mem_flush(exe_mem_flush),
         //to pc
-        .jumpe_o(jumpe_o)
+        .jumpe_o(jumpe_o),
+        //to mem
+        .mem_ctrl_o(mem_ctrl)
     );
 endmodule

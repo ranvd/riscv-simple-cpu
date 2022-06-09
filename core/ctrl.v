@@ -10,6 +10,7 @@ module ctrl(
 
     //from ex
     input wire jumpe_i,
+    input wire[`AluOpBus] aluOp_i,
     // to if_id
     output reg if_id_flush,
     // to id_exe
@@ -17,20 +18,38 @@ module ctrl(
     // to exe_mem
     output reg exe_mem_flush,
     // to pc_reg
-    output reg jumpe_o
+    output reg jumpe_o,
+    // to mem 00_00_00_00 => 00_signed_we/re_size
+    output reg[`AluOpBus] mem_ctrl_o
 );
     always @(posedge clk_i) begin
-        if (jumpe_i == `JumpEnable) begin
-            jumpe_o <= jumpe_i;
-            if_id_flush <= `FlushEnable;
-            id_exe_flush <= `FlushEnable;
-            exe_mem_flush <= `FlushEnable;
-        end else begin
-            jumpe_o <= jumpe_i;
-            if_id_flush <= `FlushDisable;
-            id_exe_flush <= `FlushDisable;
-            exe_mem_flush <= `FlushDisable;
-        end
+        mem_ctrl_o <= aluOp_i;
+
+        case (aluOp_i)
+            `JAL, `JALR, `BEQ, `BNE, `BLT, `BGE, `BLTU, `BGEU: begin
+                if (jumpe_i == `JumpEnable) begin
+                    jumpe_o <= jumpe_i;
+                    if_id_flush <= `FlushEnable;
+                    id_exe_flush <= `FlushEnable;
+                    exe_mem_flush <= `FlushEnable;
+                end else begin
+                    jumpe_o <= jumpe_i;
+                    if_id_flush <= `FlushDisable;
+                    id_exe_flush <= `FlushDisable;
+                    exe_mem_flush <= `FlushDisable;
+                end
+            end
+            `SB, `SH, `SW, `LB, `LH, `LW, `LBU, `LHU: begin
+                if_id_flush <= `FlushDisable;
+                id_exe_flush <= `FlushDisable;
+                exe_mem_flush <= `FlushDisable;
+            end
+            default: begin
+                if_id_flush <= `FlushDisable;
+                id_exe_flush <= `FlushDisable;
+                exe_mem_flush <= `FlushDisable;
+            end
+        endcase
     end
 
 endmodule

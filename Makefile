@@ -21,12 +21,13 @@ $(TB): $(CORE)*.v $(PERIPS)*.v $(SOC)*.v
 
 $(ROM): sim/rom.bin
 	hexdump -v -e '/1 "%02x \n"' $< > $@
+	hexdump -v -e '/4 "%08x \n"' $< > $@.04
 
 sim/rom.bin: sim/rom.o
 	$(OBJCOPY) -O binary $< $@
 	
 sim/rom.o: sim/rom.S
-	$(CC) -c $(SIM)rom.S -o $(SIM)rom.o
+	$(CC) -march=rv32im -c $(SIM)rom.S -o $(SIM)rom.o
 
 clean:
 	rm sim/rom.bin sim/rom.o

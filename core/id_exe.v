@@ -13,6 +13,8 @@ module id_exe (
     input wire[`RegAddrBus] reg_waddr_i,
     input wire[`AluOpBus] aluOp_i,
     input wire[`RegBus] imm_i,
+    input wire mem_we_i,
+    input wire mem_re_i,
 
     //to exe
     output reg[`InstAddrBus] inst_addr_o,

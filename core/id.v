@@ -50,7 +50,6 @@ module id(
     
     always @(*) begin
         inst_addr_o <= inst_addr_i;
-
         // 原本的 op1_o 和 op2_o 要在這一段裡面做
         // 但這樣會有 data hazard 因此改移到最後在決定。
         if (rst_i == `RstEnable) begin
@@ -75,10 +74,8 @@ module id(
                             reg2_raddr_o <= `ZeroReg;
                             reg1_re_o <= `ReadEnable;
                             reg2_re_o <= `ReadDisable;
-                            imm <= {{20{inst_i[31]}}, inst_i[31:20]};
-                            //op1_o <= reg1_rdata_i; //這兩行註解掉是因為這樣會有 data harzard
-                            //op2_o <= {{20{inst_i[31]}}, inst_i[31:20]};
-                            aluOp_o <= {funct3, opcode};    
+                            imm <= {{21{inst_i[31]}}, inst_i[30:25], inst_i[24:21], inst_i[20]};
+                            aluOp_o <= {funct3, opcode};
                         end//INST_ORI
                         `INST_SLLI, `INST_SRLI, `INST_SRAI: begin
                             reg_we_o <= `WriteEnable;
@@ -87,7 +84,7 @@ module id(
                             reg2_raddr_o <= `ZeroReg;
                             reg1_re_o <= `ReadEnable;
                             reg2_re_o <= `ReadDisable;
-                            imm <= {{27{1'b0}}, rs2[4:0]};
+                            imm <= {{21{inst_i[31]}}, inst_i[30:25], inst_i[24:21], inst_i[20]};;
                             aluOp_o <= {funct3, funct7};
                         end
                         default: begin
@@ -97,14 +94,29 @@ module id(
                             reg1_re_o <= `ReadDisable;
                             reg2_raddr_o <= `ZeroReg;
                             reg2_re_o <= `ReadDisable;
-                            //op1_o <= `ZeroWord;
-                            //op2_o <= `ZeroWord;
                             aluOp_o <= `NOP;
                         end//default
 
                         // 將 aluOp_o 移到這邊在做
                     endcase
-		        end
+		        end // END I TYPE
+
+                `INST_TYPE_I_L: begin
+                    case (funct3)
+                        `INST_LB, `INST_LH, `INST_LW, `INST_LBU, `INST_LHU: begin
+                            reg_we_o <= `WriteEnable;
+                            reg_waddr_o <= rd;
+                            reg1_raddr_o <= rs1;
+                            reg2_raddr_o <= `ZeroReg;
+                            reg1_re_o <= `ReadEnable;
+                            reg2_re_o <= `ReadDisable;
+                            imm <= {{21{inst_i[31]}}, inst_i[30:25], inst_i[24:21], inst_i[20]};;
+                            aluOp_o <= {funct3, opcode};
+                        end
+                    endcase
+                end
+
+
                 `INST_TYPE_R: begin
                     case (funct3)
                         `INST_ADD, `INST_SUB, `INST_SLL, `INST_SLT, `INST_SLTU, 
@@ -127,7 +139,33 @@ module id(
                             aluOp_o <= `NOP;
                         end//default
                     endcase
-                end
+                end // END R TYPE
+
+                `INST_TYPE_S: begin
+                    case (funct3)
+                        `INST_SB, `INST_SH, `INST_SW: begin
+                            reg_we_o <= `WriteDisable;
+                            reg_waddr_o <= `ZeroReg;
+                            reg1_raddr_o <= rs1;
+                            reg2_raddr_o <= rs2;
+                            reg1_re_o <= `ReadEnable;
+                            reg2_re_o <= `ReadEnable;
+                            aluOp_o <= {funct3, opcode};
+                            imm <= {{21{inst_i[31]}}, inst_i[30:25], inst_i[11:8], inst_i[7]};
+                        end
+                        default: begin
+                            reg_we_o = `WriteDisable;
+                            reg_waddr_o <= `ZeroReg;
+                            reg1_raddr_o <= `ZeroReg;
+                            reg1_re_o <= `ReadDisable;
+                            reg2_raddr_o <= `ZeroReg;
+                            reg2_re_o <= `ReadDisable;
+                            aluOp_o <= `NOP;
+                        end
+
+                    endcase
+                end //END S TYPE
+
                 `INST_TYPE_B: begin
                     case(funct3)
                         `INST_BEQ,`INST_BNE, `INST_BLT, `INST_BLTU, `INST_BGE, `INST_BGEU : begin
@@ -150,7 +188,8 @@ module id(
                             aluOp_o <= `NOP;
                         end//default
                     endcase
-                end
+                end // END B TYPE
+
                 `INST_TYPE_J: begin
                     // 因為 J type 只有一個，所以就不再用 case 了
                     reg_we_o <= `WriteEnable;
@@ -161,7 +200,8 @@ module id(
                     reg2_re_o <= `ReadDisable;
                     imm <= {{12{inst_i[31]}}, inst_i[19:12], inst_i[20], inst_i[30:25], inst_i[24:21], 1'b0};
                     aluOp_o <= {3'b000, opcode};
-                end
+                end // END J TYPE
+
                 `INST_TYPE_U_LUI, `INST_TYPE_U_AUIPC: begin
                     reg_we_o <= `WriteEnable;
                     reg_waddr_o <= rd;
@@ -169,9 +209,10 @@ module id(
                     reg2_raddr_o <= `ZeroReg;
                     reg1_re_o <= `ReadDisable;
                     reg2_re_o <= `ReadDisable;
-                    imm <= {inst_i[31:12], 12'b0};
+                    imm <= {inst_i[31], inst_i[31:20], inst_i[19: 12], 12'b0};
                     aluOp_o <= {3'b000, opcode};
-                end
+                end // END U TYPE
+
                 default:begin
                         reg_we_o = `WriteDisable;
                         reg_waddr_o <= `ZeroReg;
