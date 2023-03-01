@@ -1,0 +1,18 @@
+`incdlue "define.v"
+
+module PC (
+    input wire clk_i,
+    input wire rst_i,
+
+    output reg[`ADDR_WIDTH-1:0] pc_o,
+    // output reg ce_o
+);
+    always @(posedge clk_i) begin
+        if (rst_i == 1'b1) begin
+            pc_o <= `START_ADDR;
+        end else begin
+            pc_o <= pc_o + 4;
+        end
+    end
+    
+endmodule
