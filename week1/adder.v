@@ -13,6 +13,7 @@ module fulladder (
 
 endmodule
 
+// This is a ripple adder, which will cause numerous gate delays as the number of bits increases
 module adder4 (
     input wire signed [3:0] a, // MSB:LSB, which mean this is in little endian form.
     input wire signed [3:0] b,
