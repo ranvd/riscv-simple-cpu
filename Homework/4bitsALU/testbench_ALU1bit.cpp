@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 
-#include "V4bitsALU.h"
+#include "VALU1bit.h"
 #include "verilated_vcd_c.h"
 
 vluint64_t main_time = 0;
@@ -14,15 +14,15 @@ int main(int argc, char* argv[]) {
 
     VerilatedVcdC* tfp = new VerilatedVcdC();
 
-    std::unique_ptr<V4bitsALU> top(new V4bitsALU);
+    std::unique_ptr<VALU1bit> top(new VALU1bit);
     top->trace(tfp, 0);
     tfp->open("wave.vcd");
 
     while (sc_time_stamp(20) < 19 && !Verilated::gotFinish()) {
-        top->a_i = rand() % 0x16;
-        top->b_i = rand() % 0x16;
+        top->a_i = rand() % 0x2;
+        top->b_i = rand() % 0x2;
         top->c_i = rand() % 0x2;
-        top->op = 2;
+        top->op = rand() % 0x4;
         top->eval();
         printf("Time=%ld, a = %d, b = %d, c=%d, op=%d\n", main_time, top->a_i,
                top->b_i, top->c_i, top->op);

@@ -9,7 +9,7 @@ all: ${OUTFILE}
 	@echo "all outfile are: "${OUTFILE}
 
 V%.h: %.v testbench_%.cpp
-	verilator $< --exe --build $(word 2, $^) -cc --lint-only $<
+	verilator $< --exe --build $(word 2, $^) -cc $<
 
 .PHONY: trace
 trace: ${OUTFILE}

@@ -1,10 +1,10 @@
-`incdlue "define.v"
+`include "define.v"
 
 module PC (
     input wire clk_i,
     input wire rst_i,
 
-    output reg[`ADDR_WIDTH-1:0] pc_o,
+    output reg[`SYS_ADDR_SPACE-1:0] pc_o
     // output reg ce_o
 );
     always @(posedge clk_i) begin

@@ -1,5 +1,9 @@
 all:
-	verilator adder.v --exe --build testbench.cpp -cc --trace
+	verilator --exe -cc --build testbench.cpp adder4.v  --trace --public
+
+.PHONY : verilator
+verilator : testbench.cpp adder4.v
+	verilator --exe -cc --build testbench.cpp adder4.v  --trace
 
 run:
 	./obj_dir/Vadder
@@ -8,4 +12,4 @@ gtk:
 	gtkwave wave.vcd
 
 clean:
-	rm -r obj_dir wave.vcd
+	rm -rf obj_dir wave.vcd

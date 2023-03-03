@@ -1,5 +1,5 @@
 /* verilator lint_off UNOPTFLAT */
-`include "1bitsALU.v"
+`include "ALU1bit.v"
 
 module ALU_4bits (
     input wire [3:0] a_i,

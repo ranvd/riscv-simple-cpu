@@ -18,4 +18,4 @@ gtk:
 
 .PHONY:clean
 clean:
-	rm -r obj_dir wave.vcd
+	rm -fr obj_dir wave.vcd
