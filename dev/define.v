@@ -1,3 +1,6 @@
+`ifndef GENERAL_DEFINE
+`define GENERAL_DEFINE
+
 /* 
  * This system space have 48 bits and the memory space is 32 bit.
  * In other words, the maximum memory size in 4GB.
@@ -9,8 +12,6 @@
 
 `define START_ADDR `SYS_ADDR_SPACE'b0
 `define MEM_BASE `START_ADDR
-/*
- * This is RISC-V, which instruction are 32 bits width.
- */
-`define INST_WIDTH 32
 
+
+`endif

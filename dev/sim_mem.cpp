@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 
-#include "VIF.h"
-#include "VIF__Syms.h"
+#include "VCore.h"
+#include "VCore__Syms.h"
 #include "verilated_vcd_c.h"
 
 #define bswap from_le
@@ -15,7 +15,7 @@ static inline T from_le(T n) {
     return n;
 }
 
-void sim_mem_write(VIF_rom *rom, VL_IN64(addr, 47, 0), size_t length,
+void sim_mem_write(VCore_rom *rom, VL_IN64(addr, 47, 0), size_t length,
                    const void *bytes) {
     // Endian transfer
     for (int i = 0; i < length; i += 4) {
@@ -26,8 +26,8 @@ void sim_mem_write(VIF_rom *rom, VL_IN64(addr, 47, 0), size_t length,
     }
 }
 
-void sim_mem_load_bin(VIF_rom *rom, std::string fn) {
-    std::ifstream bpfs(fn, std::ios::binary | std::ios::ate);
+void sim_mem_load_bin(VCore_rom *rom, std::string fn) {
+    std::ifstream bpfs(fn, std::ios_base::binary | std::ios::ate);
     std::ifstream::pos_type pos = bpfs.tellg();
     int f_length = pos;
     char *buf = new char[f_length];

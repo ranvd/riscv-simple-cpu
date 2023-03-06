@@ -1,3 +1,5 @@
+vpath 
+
 CROSS_COMPILE = riscv64-unknown-elf-
 CFLAGS = -nostdlib -fno-builtin -march=rv32ima -mabi=ilp32 -g -Wall
 # -nostdlib: do not link to the standard library.
@@ -6,9 +8,14 @@ CFLAGS = -nostdlib -fno-builtin -march=rv32ima -mabi=ilp32 -g -Wall
 # -march: use the instruction set which is RISC-V 32 bit IMA.
 # -mabi: generate sepcified data model. ilp32 means, "int, long int, pointer are 32 bit".
 # Another example of mabi is lp64 which means "int are 32 bits and long int, pointer are 64 bits"
+
 CC = ${CROSS_COMPILE}gcc
 OBJCOPY = $(CROSS_COMPILE)objcopy
 OBJDUMP = ${CROSS_COMPILE}objdump
+
+V_INC_PATH = inst_idf
+FILE = testbench.cpp sim_mem.cpp Core.v
+CONF = config.vlt
 
 .DEFAULT_GOAL := all
 all :
@@ -17,8 +24,7 @@ all :
 
 .PHONY : verilate
 verilate : testbench.cpp IF.v
-	verilator -cc --exe --build testbench.cpp sim_mem.cpp IF.v config.vlt --trace
-
+	verilator -y ${V_INC_PATH} -cc --exe --build ${FILE} ${CONF} --trace
 
 
 .PHONY : code
@@ -31,4 +37,4 @@ hex : all
 
 .PHONY : clean
 clean : 
-	rm -rf *.o *.bin *.elf obj_dir
+	rm -rf *.o *.bin *.elf obj_dir wave.vcd
