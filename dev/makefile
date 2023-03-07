@@ -1,4 +1,3 @@
-vpath 
 
 CROSS_COMPILE = riscv64-unknown-elf-
 CFLAGS = -nostdlib -fno-builtin -march=rv32ima -mabi=ilp32 -g -Wall
@@ -13,19 +12,31 @@ CC = ${CROSS_COMPILE}gcc
 OBJCOPY = $(CROSS_COMPILE)objcopy
 OBJDUMP = ${CROSS_COMPILE}objdump
 
-V_INC_PATH = inst_idf
-FILE = testbench.cpp sim_mem.cpp Core.v
+V_MODULE_PATH1 = core/
+V_MODULE_PATH2 = core/inst_idfr/
+
+FILE = testbench.cpp \
+			sim_mem.cpp \
+			Core.v \
+
+SIM_DIR = sim/obj_dir
 CONF = config.vlt
+
+# VPATH = sim/
+# VPATH = core/
 
 .DEFAULT_GOAL := all
 all :
-	@${CC} ${CFLAGS} test.S -o test.elf
-	@${OBJCOPY} -O binary test.elf test.bin
+	@${CC} ${CFLAGS} sim/test.S -o sim/test.elf
+	@${OBJCOPY} -O binary sim/test.elf sim/test.bin
 
 .PHONY : verilate
-verilate : testbench.cpp IF.v
-	verilator -y ${V_INC_PATH} -cc --exe --build ${FILE} ${CONF} --trace
+verilate :
+	verilator -y ${V_MODULE_PATH1} -y ${V_MODULE_PATH2} -Mdir ${SIM_DIR} -cc --exe --build ${FILE} ${CONF} --trace
 
+.PHONY : sim
+sim :
+	./sim/obj_dir/VCore test.bin
 
 .PHONY : code
 code : all
@@ -37,4 +48,4 @@ hex : all
 
 .PHONY : clean
 clean : 
-	rm -rf *.o *.bin *.elf obj_dir wave.vcd
+	rm -rf sim/obj_dir wave.vcd sim/*.elf sim/*.bin

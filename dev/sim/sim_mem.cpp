@@ -15,6 +15,7 @@ static inline T from_le(T n) {
     return n;
 }
 
+
 void sim_mem_write(VCore_rom *rom, VL_IN64(addr, 47, 0), size_t length,
                    const void *bytes) {
     // Endian transfer
