@@ -1,7 +1,8 @@
 .org 0x0
 .global _start
 _start:
-    ori x5, x4, 2
-    ori x5, x4, 3
-    ori x5, x4, 4
-    ori x5, x4, 5
+    addi x1, x4, -2048
+    nop
+    nop
+    srai x1, x1, 4
+    srli x2, x1, 4

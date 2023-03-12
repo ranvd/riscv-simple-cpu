@@ -102,7 +102,9 @@
 `define SRAI             3'b101
 `define SRAI_FUNCT7      7'b0100000
 
+
 `define NONE_ID          17'b0
+// I-TYPE
 `define ADDI_ID          {`FUN7_NONE, `ADDI, `OP_IMM}
 `define SLTI_ID          {`FUN7_NONE, `SLTI, `OP_IMM}
 `define SLTIU_ID         {`FUN7_NONE, `SLTIU, `OP_IMM}

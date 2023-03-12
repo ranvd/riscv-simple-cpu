@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 
-#include "Vadder.h"
+#include "Vmultiplier.h"
 #include "verilated_vcd_c.h"
 
 vluint64_t main_time = 0;
@@ -14,18 +14,19 @@ int main(int argc, char* argv[]) {
 
     VerilatedVcdC* tfp = new VerilatedVcdC();
 
-    std::unique_ptr<Vadder> top(new Vadder);
+    std::unique_ptr<Vmultiplier> top(new Vmultiplier);
     top->trace(tfp, 0);
     tfp->open("wave.vcd");
 
-    while (sc_time_stamp(20) < 19 && !Verilated::gotFinish()) {
+    while (sc_time_stamp(20) < 5 && !Verilated::gotFinish()) {
         // std:: cout << main_time << std::endl;
-        top->a_i = rand() % 0x16;
-        top->b_i = rand() % 0x16 << 1;
-        top->c_i = rand() % 0x16 << 2;
+        top->in_data = -16;
         top->eval();
         tfp->dump(main_time);
         main_time++;
+
+        printf("in_data: %08X\n", top->in_data);
+        printf("out_data: %08X\n", top->out_data);
     }
     top->final();
     tfp->close();

@@ -12,8 +12,8 @@ CC = ${CROSS_COMPILE}gcc
 OBJCOPY = $(CROSS_COMPILE)objcopy
 OBJDUMP = ${CROSS_COMPILE}objdump
 
-V_MODULE_PATH1 = core/
-V_MODULE_PATH2 = core/inst_idfr/
+V_MODULE_PATH1 = core
+V_MODULE_PATH2 = core/inst_idfr
 
 FILE = testbench.cpp \
 			sim_mem.cpp \
@@ -36,11 +36,11 @@ verilate :
 
 .PHONY : sim
 sim :
-	./sim/obj_dir/VCore test.bin
+	./sim/obj_dir/VCore ./sim/test.bin
 
 .PHONY : code
 code : all
-	@${OBJDUMP} -S test.elf | less
+	@${OBJDUMP} -S ./sim/test.elf | less
 
 .PHONY : hex
 hex : all

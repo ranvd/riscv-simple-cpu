@@ -1,5 +1,3 @@
-`include "define.v"
-
 module pc (
     input wire clk_i,
     input wire rst_i,

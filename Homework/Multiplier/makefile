@@ -1,6 +1,6 @@
 FILE = $(wildcard *.v)
 OUTFILE = $(patsubst %.v, V%.h, ${FILE})
-TESTBENCH = $(patsubst %.v, testbench_%.cpp, %{FILE})
+
 
 all: ${OUTFILE}
 	@echo "all file are: "${FILE}
@@ -15,3 +15,8 @@ gtk:
 .PHONY: clean
 clean:
 	rm -rf obj_dir *.vcd
+
+.PHONY : vars
+vars:
+	@echo "FILE= " $(FILE)
+	@echo "OUTFILE= " $(OUTFILE)

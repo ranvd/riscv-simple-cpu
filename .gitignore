@@ -1,3 +1,4 @@
 .vscode
 gtkwave*
 xpack*
+obj_dir/

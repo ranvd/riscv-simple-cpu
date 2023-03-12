@@ -1,3 +1,10 @@
 `verilator_config
-public -module "rom" -task "writeByte"
+public -module "cache" -task "writeByte"
+public -module "regfile" -task "writeReg"
+public -module "regfile" -task "readReg"
+public -module "regfile" -task "readRegs"
+
 lint_off -rule UNSIGNED
+lint_off -rule WIDTHEXPAND -file "core/Core.v" -lines 104
+lint_on -rule LATCH
+lint_on -rule CASEOVERLAP

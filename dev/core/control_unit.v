@@ -6,6 +6,7 @@ module control_unit (
 
     // to ID
     output reg rd_we,
+    output reg mem_re,
     output reg mem_we,
     output reg [`INST_ID_LEN-1:0] instr_id // 也許會出問題
 );
@@ -18,12 +19,15 @@ module control_unit (
 
     always @(*) begin
         case (instr_id)
-            `ORI_ID : begin
+            `ADDI_ID, `SLTI_ID, `SLTIU_ID, `XORI_ID, 
+            `ORI_ID, `ANDI_ID, `SLLI_ID, `SRLI_ID, `SRAI_ID : begin
                 rd_we = 1;
+                mem_re = 0;
                 mem_we = 0;
             end
             default: begin
                 rd_we = 0;
+                mem_re = 0;
                 mem_we = 0;
             end
         endcase
