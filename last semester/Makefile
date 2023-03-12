@@ -30,4 +30,4 @@ sim/rom.o: sim/rom.S
 	$(CC) -march=rv32im -c $(SIM)rom.S -o $(SIM)rom.o
 
 clean:
-	rm sim/rom.bin sim/rom.o
+	rm sim/rom.bin sim/rom.o sim/*.vcd sim/*.vvp
