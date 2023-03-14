@@ -3,9 +3,10 @@
 
 `include "conf_riscv_spec.v"
 
-`define CHIP_ENABLE 1'b1
-`define CHIP_DISABLE 1'b0
-
+//////////////////////////////////////////////////////////////////
+//                        Hardward define                       //
+//                                                              //
+//////////////////////////////////////////////////////////////////
 /* 
  * This system space have 48 bits and the memory space is 32 bit.
  * In other words, the maximum memory size in 4GB.
@@ -20,5 +21,16 @@
 `define MEM_BASE `START_ADDR
 
 `define CACHE_DATA_WIDTH `INST_WIDTH
+
+//////////////////////////////////////////////////////////////////
+//                         Singal define                        //
+//                                                              //
+//////////////////////////////////////////////////////////////////
+`define On 1'b1
+`define Off 1'b0
+
+`define Forward_Rs1 2'b01
+`define Forward_Rs2 2'b10
+
 
 `endif

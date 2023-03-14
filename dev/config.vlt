@@ -5,6 +5,6 @@ public -module "regfile" -task "readReg"
 public -module "regfile" -task "readRegs"
 
 lint_off -rule UNSIGNED
-lint_off -rule WIDTHEXPAND -file "core/Core.v" -lines 104
+lint_on -rule WIDTHEXPAND
 lint_on -rule LATCH
 lint_on -rule CASEOVERLAP

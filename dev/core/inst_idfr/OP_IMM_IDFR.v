@@ -9,7 +9,7 @@ module OP_IMM_IDFR (
     output reg [`INST_ID_LEN-1:0] instr_id
 );
     always @(*) begin
-        if (ce == `CHIP_ENABLE) begin
+        if (ce == `On) begin
             case (funct3)
                 `ADDI : begin
                     instr_id = `ADDI_ID;
@@ -49,6 +49,8 @@ module OP_IMM_IDFR (
                     instr_id = `NONE_ID;
                 end
             endcase
+        end else begin
+            instr_id = `NONE_ID;
         end
     end
 endmodule

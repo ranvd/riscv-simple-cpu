@@ -5,6 +5,8 @@ module control_unit (
     input wire [`opcode_width-1:0] opcode,
 
     // to ID
+    output reg rs1_re, // new
+    output reg rs2_re, // new
     output reg rd_we,
     output reg mem_re,
     output reg mem_we,
@@ -21,14 +23,18 @@ module control_unit (
         case (instr_id)
             `ADDI_ID, `SLTI_ID, `SLTIU_ID, `XORI_ID, 
             `ORI_ID, `ANDI_ID, `SLLI_ID, `SRLI_ID, `SRAI_ID : begin
-                rd_we = 1;
-                mem_re = 0;
-                mem_we = 0;
+                rs1_re = `On;
+                rs2_re = `Off;
+                rd_we = `On;
+                mem_re = `Off;
+                mem_we = `Off;
             end
             default: begin
-                rd_we = 0;
-                mem_re = 0;
-                mem_we = 0;
+                rs1_re = `Off;
+                rs2_re = `Off;
+                rd_we = `Off;
+                mem_re = `Off;
+                mem_we = `Off;
             end
         endcase
     end

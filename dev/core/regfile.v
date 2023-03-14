@@ -1,3 +1,4 @@
+/* verilator lint_off WIDTHEXPAND */
 module regfile(
     
     // from ID

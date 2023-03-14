@@ -11,10 +11,10 @@ module instr_identifier (
     always @(*) begin
         case (opcode_i)
             `OP_IMM : begin
-                OP_IMM_ce = 1;
+                OP_IMM_ce = `On;
             end
             default: begin
-                OP_IMM_ce = 0;
+                OP_IMM_ce = `Off;
             end
         endcase
     end

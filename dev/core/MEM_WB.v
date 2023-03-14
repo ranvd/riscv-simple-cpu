@@ -7,6 +7,7 @@ module MEM_WB (
     input wire rd_we_i,
 
     // to WB
+    // Also, alu value and rd info. will send to forwaring unit
     output reg [`GPR_WIDTH-1:0] rd_val_o,
     output reg [`GPR_ADDR_SPACE-1:0] rd_addr_o,
     output reg rd_we_o

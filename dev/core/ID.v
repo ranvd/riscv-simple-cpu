@@ -3,7 +3,7 @@ module ID (
     input wire [`INST_WIDTH-1:0] instr_i,
     input wire [`SYS_ADDR_SPACE-1:0] pc_i,
 
-    // to regfile
+    // to regfile and ID_EXE
     output wire [`GPR_ADDR_SPACE-1:0] rs1_addr_o,
     output wire [`GPR_ADDR_SPACE-1:0] rs2_addr_o,
     
@@ -13,6 +13,8 @@ module ID (
     output wire [`opcode_width-1:0] opcode_o,
 
     // from control unit
+    input wire rs1_re_i,
+    input wire rs2_re_i,
     input wire rd_we_i,
     input wire mem_re_i,
     input wire mem_we_i,
@@ -25,6 +27,8 @@ module ID (
     // to ID_EXE
     output wire [`GPR_ADDR_SPACE-1:0] rd_addr_o,
     output wire rd_we_o,
+    output wire rs1_re_o,
+    output wire rs2_re_o,
     output wire mem_re_o,
     output wire mem_we_o,
     output wire [`INST_ID_LEN-1:0] instr_id_o,
@@ -39,7 +43,10 @@ module ID (
     assign funct3_o = instr_i[`funct3];
     assign opcode_o = instr_i[`opcode];
     
+    // to ID_EXE
     assign rd_addr_o = instr_i[`rd];
+    assign rs1_re_o = rs1_re_i;
+    assign rs2_re_o = rs2_re_i;
     assign rd_we_o = rd_we_i;
     assign mem_re_o = mem_re_i;
     assign mem_we_o = mem_we_i;
