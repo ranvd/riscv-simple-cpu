@@ -31,6 +31,6 @@
 
 `define Forward_Rs1 2'b01
 `define Forward_Rs2 2'b10
-
+`define Forward_Both 2'b11
 
 `endif

@@ -29,6 +29,21 @@ module control_unit (
                 mem_re = `Off;
                 mem_we = `Off;
             end
+            `ADD_ID, `SUB_ID, `SLL_ID, `SLT_ID, `SLTU_ID,
+            `XOR_ID, `SRL_ID, `SRA_ID, `OR_ID, `AND_ID : begin
+                rs1_re = `On;
+                rs2_re = `On;
+                rd_we = `On;
+                mem_re = `Off;
+                mem_we = `Off;
+            end
+            `LUI_ID, `AUIPC_ID : begin
+                rs1_re = `Off;
+                rs2_re = `Off;
+                rd_we = `On;
+                mem_re = `Off;
+                mem_we = `Off;
+            end
             default: begin
                 rs1_re = `Off;
                 rs2_re = `Off;
@@ -40,3 +55,4 @@ module control_unit (
     end
 
 endmodule
+

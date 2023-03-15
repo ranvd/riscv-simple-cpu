@@ -56,9 +56,10 @@ module Core (
     wire regfile_rd_we_i;
 
     // from ID to ID_EXE
-    wire [`GPR_ADDR_SPACE-1:0] id_exe_rd_addr_i;
+    wire [`SYS_ADDR_SPACE-1:0] id_exe_pc_i;
     wire id_exe_rs1_re_i;
     wire id_exe_rs2_re_i;
+    wire [`GPR_ADDR_SPACE-1:0] id_exe_rd_addr_i;
     wire id_exe_rd_we_i;
     wire id_exe_mem_re_i;
     wire id_exe_mem_we_i;
@@ -95,6 +96,7 @@ module Core (
         .rs2_val_i      (id_rs2_val_i),
         
         // to ID_EXE
+        .pc_o           (id_exe_pc_i),
         .rs1_re_o       (id_exe_rs1_re_i),
         .rs2_re_o       (id_exe_rs2_re_i),
         .rd_addr_o      (id_exe_rd_addr_i),
@@ -139,6 +141,7 @@ module Core (
 
     
     // from ID_EXE to EXE
+    wire [`SYS_ADDR_SPACE-1:0] exe_pc_i;
     wire [`GPR_ADDR_SPACE-1:0] exe_rd_addr_i;
     wire exe_rd_we_i;
     wire exe_mem_re_i;
@@ -149,9 +152,10 @@ module Core (
     wire [`IMM_WIDTH-1:0] exe_imm_i;
 
     // from forwarding unit to EXE
-    reg [`GPR_WIDTH-1:0] fexe_val;
-    reg fexe_rs1_we;
-    reg fexe_rs2_we;
+    reg [`GPR_WIDTH-1:0] fexe_rs1_val_i;
+    reg [`GPR_WIDTH-1:0] fexe_rs2_val_i;
+    reg fexe_rs1_we_i;
+    reg fexe_rs2_we_i;
 
     // from ID_EXE to forwarding unit
     wire [`GPR_ADDR_SPACE-1:0] forward_rs1_addr_i;
@@ -163,8 +167,11 @@ module Core (
         .clk_i(clk_i),
 
         // from ID
+        .pc_i          (id_exe_pc_i),
+        .rs1_val_i     (id_exe_rs1_val_i),
         .rs1_addr_i    (regfile_rs1_addr_i),
         .rs1_re_i      (id_exe_rs1_re_i),
+        .rs2_val_i     (id_exe_rs2_val_i),
         .rs2_addr_i    (regfile_rs2_addr_i),
         .rs2_re_i      (id_exe_rs2_re_i),
         .rd_addr_i     (id_exe_rd_addr_i),
@@ -172,18 +179,17 @@ module Core (
         .mem_re_i      (id_exe_mem_re_i),
         .mem_we_i      (id_exe_mem_we_i),
         .instr_id_i    (id_exe_instr_id_i),
-        .rs1_val_i     (id_exe_rs1_val_i),
-        .rs2_val_i     (id_exe_rs2_val_i),
         .imm_i         (id_exe_imm_i),
 
         // to EXE
+        .pc_o          (exe_pc_i),
+        .rs1_val_o     (exe_rs1_val_i),
+        .rs2_val_o     (exe_rs2_val_i),
         .rd_addr_o     (exe_rd_addr_i),
         .rd_we_o       (exe_rd_we_i),
         .mem_re_o      (exe_mem_re_i),
         .mem_we_o      (exe_mem_we_i),
         .instr_id_o    (exe_instr_id_i),
-        .rs1_val_o     (exe_rs1_val_i),
-        .rs2_val_o     (exe_rs2_val_i),
         .imm_o         (exe_imm_i),
 
         // to forwarding unit
@@ -203,6 +209,7 @@ module Core (
 
     EXE EXE1(
         // from ID_EXE
+        .pc_i          (exe_pc_i),
         .rd_addr_i     (exe_rd_addr_i),
         .rd_we_i       (exe_rd_we_i),
         .mem_re_i      (exe_mem_re_i),
@@ -213,9 +220,10 @@ module Core (
         .imm_i         (exe_imm_i),
 
         // from forwarding unit
-        .forward_val   (fexe_val),
-        .forward_rs1_we(fexe_rs1_we),
-        .forward_rs2_we(fexe_rs2_we),
+        .forward_rs1_val_i   (fexe_rs1_val_i),
+        .forward_rs2_val_i   (fexe_rs2_val_i),
+        .forward_rs1_we_i    (fexe_rs1_we_i),
+        .forward_rs2_we_i    (fexe_rs2_we_i),
 
         // to EXE_WB
         .alu_val_o     (exe_mem_alu_val_i),
@@ -324,9 +332,10 @@ module Core (
         .mem_wb_rd_we(wb_rd_we_i),
 
         // to EXE
-        .forward_rd_val(fexe_val),
-        .forward_rs1_we(fexe_rs1_we),
-        .forward_rs2_we(fexe_rs2_we)
+        .forward_rs1_val(fexe_rs1_val_i),
+        .forward_rs2_val(fexe_rs2_val_i),
+        .forward_rs1_we(fexe_rs1_we_i),
+        .forward_rs2_we(fexe_rs2_we_i)
     );
 
 endmodule

@@ -25,10 +25,11 @@ module ID (
     input wire [`GPR_WIDTH-1:0] rs2_val_i,
 
     // to ID_EXE
-    output wire [`GPR_ADDR_SPACE-1:0] rd_addr_o,
-    output wire rd_we_o,
+    output wire [`SYS_ADDR_SPACE-1:0] pc_o,
     output wire rs1_re_o,
     output wire rs2_re_o,
+    output wire [`GPR_ADDR_SPACE-1:0] rd_addr_o,
+    output wire rd_we_o,
     output wire mem_re_o,
     output wire mem_we_o,
     output wire [`INST_ID_LEN-1:0] instr_id_o,
@@ -44,9 +45,10 @@ module ID (
     assign opcode_o = instr_i[`opcode];
     
     // to ID_EXE
-    assign rd_addr_o = instr_i[`rd];
+    assign pc_o = pc_i;
     assign rs1_re_o = rs1_re_i;
     assign rs2_re_o = rs2_re_i;
+    assign rd_addr_o = instr_i[`rd];
     assign rd_we_o = rd_we_i;
     assign mem_re_o = mem_re_i;
     assign mem_we_o = mem_we_i;
@@ -59,6 +61,9 @@ module ID (
         case (opcode_o)
             `OP_IMM : begin
                 imm_o = `I_TYPE_IMM(instr_i);
+            end
+            `LUI, `AUIPC : begin
+                imm_o = `U_TYPE_IMM(instr_i);
             end
             default:
                 imm_o = 32'b0;

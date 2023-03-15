@@ -17,7 +17,8 @@ module forwarding_unit (
     input mem_wb_rd_we,
 
     // to EXE
-    output reg [`GPR_WIDTH-1:0] forward_rd_val,
+    output reg [`GPR_WIDTH-1:0] forward_rs1_val,
+    output reg [`GPR_WIDTH-1:0] forward_rs2_val,
     output reg forward_rs1_we,
     output reg forward_rs2_we
 );
@@ -26,29 +27,23 @@ module forwarding_unit (
         // check rs1
         if (id_exe_rs1_addr == exe_mem_rd_addr && (id_exe_rs1_re & exe_mem_rd_we)) begin
             forward_rs1_we = `On;
-            forward_rs2_we = `Off;
-            forward_rd_val = exe_mem_alu_val;
+            forward_rs1_val = exe_mem_alu_val;
         end else if (id_exe_rs1_addr == mem_wb_rd_addr && (id_exe_rs1_re & mem_wb_rd_we)) begin
             forward_rs1_we = `On;
-            forward_rs2_we = `Off;
-            forward_rd_val = mem_wb_rd_val;
+            forward_rs1_val = mem_wb_rd_val;
         end else begin
             forward_rs1_we = `Off;
-            forward_rs2_we = `Off;
         end
     end
 
     always @(*) begin // check rs2
         if (id_exe_rs2_addr == exe_mem_rd_addr && (id_exe_rs2_re & exe_mem_rd_we)) begin
-            forward_rs1_we = `Off;
             forward_rs2_we = `On;
-            forward_rd_val = exe_mem_alu_val;
+            forward_rs2_val = exe_mem_alu_val;
         end else if (id_exe_rs2_addr == mem_wb_rd_addr && (id_exe_rs2_re & mem_wb_rd_we)) begin
-            forward_rs1_we = `Off;
             forward_rs2_we = `On;
-            forward_rd_val = mem_wb_rd_val;
+            forward_rs2_val = mem_wb_rd_val;
         end else begin
-            forward_rs1_we = `Off;
             forward_rs2_we = `Off;
         end
     end

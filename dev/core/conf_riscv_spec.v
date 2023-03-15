@@ -68,6 +68,10 @@
 //  |__________|____________________________|_______________|_________|_____________|_____________|__________|    //
 //                                                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/* These macro are used for transform the immediate value of 
+ * different instruction type in convenience. 
+ */
 `define IMM_WIDTH 32
 `define I_TYPE_IMM(instr) {{21{instr[31]}}, instr[30:25], instr[24:21], instr[20]}
 `define S_TYPE_IMM(instr) {{21{instr[31]}}, instr[30:25], instr[11:8], instr[7]}
@@ -82,13 +86,21 @@
 //                                                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/* ---------------- opcode ----------------
+ * Due to the Ch.24 in risc-v unprivileged spec.
+ * the opcode are seperated like this.
+ * This is why I write it in 2-3-2 format.
+ */
 `define OP_IMM    7'b00_100_11
 `define OP        7'b01_100_11
+`define LUI       7'b01_101_11
+`define AUIPC     7'b00_101_11
 
+`define FUN3_NONE 3'b000
 `define FUN7_NONE 7'b0000000
 
-`define INST_ID_LEN 17 // {funct7, funct3, opcode}
 
+/* ---------------- I-type ---------------- */
 `define ADDI             3'b000
 `define SLTI             3'b010
 `define SLTIU            3'b011
@@ -101,10 +113,38 @@
 `define SRLI_FUNCT7      7'b0000000
 `define SRAI             3'b101
 `define SRAI_FUNCT7      7'b0100000
+/* ---------------- R-type ---------------- */
+`define ADD              3'b000
+`define ADD_FUNCT7       7'b0000000
+`define SUB              3'b000
+`define SUB_FUNCT7       7'b0100000
+`define SLL              3'b001
+`define SLL_FUNCT7       7'b0000000
+`define SLT              3'b010
+`define SLT_FUNCT7       7'b0000000
+`define SLTU             3'b011
+`define SLTU_FUNCT7      7'b0000000
+`define XOR              3'b100
+`define XOR_FUNCT7       7'b0000000
+`define SRL              3'b101
+`define SRL_FUNCT7       7'b0000000
+`define SRA              3'b101
+`define SRA_FUNCT7       7'b0100000
+`define OR               3'b110
+`define OR_FUNCT7        7'b0000000
+`define AND              3'b111
+`define AND_FUNCT7       7'b0000000
 
 
+
+// Pesudo
+`define NOP              `ADDI
+
+
+/* ---------------- Instr. ID ---------------- */
+`define INST_ID_LEN 17 // {funct7, funct3, opcode}
 `define NONE_ID          17'b0
-// I-TYPE
+/* ---------------- I-type ID ---------------- */
 `define ADDI_ID          {`FUN7_NONE, `ADDI, `OP_IMM}
 `define SLTI_ID          {`FUN7_NONE, `SLTI, `OP_IMM}
 `define SLTIU_ID         {`FUN7_NONE, `SLTIU, `OP_IMM}
@@ -114,7 +154,20 @@
 `define SLLI_ID          {`SLLI_FUNCT7, `SLLI, `OP_IMM}
 `define SRLI_ID          {`SRLI_FUNCT7, `SRLI, `OP_IMM}
 `define SRAI_ID          {`SRAI_FUNCT7, `SRAI, `OP_IMM}
-
+/* ---------------- R-type ID ---------------- */
+`define ADD_ID          {`ADD_FUNCT7, `ADD, `OP}
+`define SUB_ID          {`SUB_FUNCT7, `SUB, `OP}
+`define SLL_ID          {`SLL_FUNCT7, `SLL, `OP}
+`define SLT_ID          {`SLT_FUNCT7, `SLT, `OP}
+`define SLTU_ID         {`SLTU_FUNCT7, `SLTU, `OP}
+`define XOR_ID          {`XOR_FUNCT7, `XOR, `OP}
+`define SRL_ID          {`SRL_FUNCT7, `SRL, `OP}
+`define SRA_ID          {`SRA_FUNCT7, `SRA, `OP}
+`define OR_ID           {`OR_FUNCT7, `OR, `OP}
+`define AND_ID          {`AND_FUNCT7, `AND, `OP}
+/* ---------------- U-type ID ---------------- */
+`define LUI_ID          {`FUN7_NONE, `FUN3_NONE, `LUI}
+`define AUIPC_ID        {`FUN7_NONE, `FUN3_NONE, `AUIPC}
 
 
 `endif

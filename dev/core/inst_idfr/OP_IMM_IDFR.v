@@ -49,8 +49,6 @@ module OP_IMM_IDFR (
                     instr_id = `NONE_ID;
                 end
             endcase
-        end else begin
-            instr_id = `NONE_ID;
         end
     end
 endmodule
