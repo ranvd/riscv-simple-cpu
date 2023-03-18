@@ -6,6 +6,7 @@
 module IF (
     input wire clk_i,
     input wire rst_i,
+    input wire stall_i,
     
     output reg[`INST_WIDTH-1:0] inst_o,
     output reg[`SYS_ADDR_SPACE-1:0] pc_o
@@ -16,12 +17,13 @@ module IF (
     wire we_wire;
 
     assign w_data_zero = `CACHE_DATA_WIDTH'h0;
-    assign re_wire = !rst_i;
+    assign re_wire = !rst_i; // reset enable = read disable
     assign we_wire = 1'b0;
     
     pc pc1(
         .clk_i(clk_i),
         .rst_i(rst_i),
+        .stall_i(stall_i),
         .pc_o(pc_wire)
     );
     
@@ -29,10 +31,11 @@ module IF (
 
     cache instr_cache1(
         .re_i(re_wire),
-        .we_i(we_wire),
+        .we_i(`Off),
         .r_addr_i(pc_wire),
         .w_addr_i(pc_wire),
         .w_data_i(w_data_zero),
+        .mem_mode_i(`LW_FUN3),
         .data_o(inst_o)
     );
     

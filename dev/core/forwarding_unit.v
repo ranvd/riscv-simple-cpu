@@ -9,7 +9,8 @@ module forwarding_unit (
     // from EXE_MEM
     input wire [`GPR_ADDR_SPACE-1:0] exe_mem_rd_addr,
     input [`GPR_WIDTH-1:0] exe_mem_alu_val,
-    input exe_mem_rd_we,
+    input wire exe_mem_rd_we,
+    input wire exe_mem_mem_re,
 
     // from MEM_WB
     input wire [`GPR_ADDR_SPACE-1:0] mem_wb_rd_addr,
@@ -25,7 +26,7 @@ module forwarding_unit (
 
     always @(*)begin
         // check rs1
-        if (id_exe_rs1_addr == exe_mem_rd_addr && (id_exe_rs1_re & exe_mem_rd_we)) begin
+        if (id_exe_rs1_addr == exe_mem_rd_addr && (id_exe_rs1_re & exe_mem_rd_we) && !exe_mem_mem_re) begin
             forward_rs1_we = `On;
             forward_rs1_val = exe_mem_alu_val;
         end else if (id_exe_rs1_addr == mem_wb_rd_addr && (id_exe_rs1_re & mem_wb_rd_we)) begin
@@ -37,7 +38,7 @@ module forwarding_unit (
     end
 
     always @(*) begin // check rs2
-        if (id_exe_rs2_addr == exe_mem_rd_addr && (id_exe_rs2_re & exe_mem_rd_we)) begin
+        if (id_exe_rs2_addr == exe_mem_rd_addr && (id_exe_rs2_re & exe_mem_rd_we) && !exe_mem_mem_re) begin
             forward_rs2_we = `On;
             forward_rs2_val = exe_mem_alu_val;
         end else if (id_exe_rs2_addr == mem_wb_rd_addr && (id_exe_rs2_re & mem_wb_rd_we)) begin

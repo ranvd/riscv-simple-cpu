@@ -7,32 +7,30 @@ module Core (
 );
     wire [`INST_WIDTH-1:0] if_id_instr_i;
     wire [`SYS_ADDR_SPACE-1:0] if_id_pc_i;
+    wire if_stall_i;  // from hazard detect unit
 
     IF IF1(
         .clk_i        (clk_i),
         .rst_i        (rst_i),
+        .stall_i      (if_stall_i),
         .inst_o       (if_id_instr_i),
         .pc_o         (if_id_pc_i)
     );
 
-    wire [`INST_WIDTH-1:0] if_id_flush_i;
-    wire [1:0] if_id_sel_i;
+    wire [1:0] if_id_mode_i;  // used for hazard detection unit
     wire [`SYS_ADDR_SPACE-1:0] id_pc_i;
     wire [`INST_WIDTH-1:0] id_instr_i;
 
-    // This wire value may be change in the future, Control by hazard detection
-    assign if_id_flush_i = `INST_WIDTH'b0;
-    assign if_id_sel_i = 2'b10; // sel = selection, used in mux.
-
     IF_ID IF_ID1(
-        .clk_i(clk_i),
-        .stall_i      (id_instr_i),
-        .flush_i      (if_id_flush_i),
-        .instr_i      (if_id_instr_i),
-        .sel_i        (if_id_sel_i),
-        .pc_i         (if_id_pc_i),
+        .clk_i         (clk_i),
+        // from hazard detection
+        .mode_i        (if_id_mode_i),
+        
+        // from IF
+        .instr_i       (if_id_instr_i),
+        .pc_i          (if_id_pc_i),
         .instr_o       (id_instr_i),
-        .pc_o         (id_pc_i)
+        .pc_o          (id_pc_i)
     );
 
     // some wire for ID stage
@@ -95,7 +93,7 @@ module Core (
         .rs1_val_i      (id_rs1_val_i),
         .rs2_val_i      (id_rs2_val_i),
         
-        // to ID_EXE
+        // to ID_EXE and hazard detect unit
         .pc_o           (id_exe_pc_i),
         .rs1_re_o       (id_exe_rs1_re_i),
         .rs2_re_o       (id_exe_rs2_re_i),
@@ -163,9 +161,13 @@ module Core (
     wire [`GPR_ADDR_SPACE-1:0] forward_rs2_addr_i;
     wire forward_rs2_re_i;
 
-    ID_EXE ID_EXE1(
-        .clk_i(clk_i),
+    // from hazard detect unit to ID_EXE
+    wire [1:0] id_exe_mode_i; 
 
+    ID_EXE ID_EXE1(
+        .clk_i         (clk_i),
+
+        .mode_i        (id_exe_mode_i),
         // from ID
         .pc_i          (id_exe_pc_i),
         .rs1_val_i     (id_exe_rs1_val_i),
@@ -181,7 +183,7 @@ module Core (
         .instr_id_i    (id_exe_instr_id_i),
         .imm_i         (id_exe_imm_i),
 
-        // to EXE
+        // to EXE and hazard detect unit
         .pc_o          (exe_pc_i),
         .rs1_val_o     (exe_rs1_val_i),
         .rs2_val_o     (exe_rs2_val_i),
@@ -192,7 +194,7 @@ module Core (
         .instr_id_o    (exe_instr_id_i),
         .imm_o         (exe_imm_i),
 
-        // to forwarding unit
+        // to forwarding unit and hazard detection unit
         .rs1_addr_o    (forward_rs1_addr_i),
         .rs1_re_o      (forward_rs1_re_i),
         .rs2_addr_o    (forward_rs2_addr_i),
@@ -206,18 +208,19 @@ module Core (
     wire [`GPR_WIDTH-1:0] exe_mem_rs2_val_i;
     wire exe_mem_mem_re_i;
     wire exe_mem_mem_we_i;
+    wire [`funct3_width-1:0] exe_mem_mem_mode_i;
 
     EXE EXE1(
         // from ID_EXE
-        .pc_i          (exe_pc_i),
-        .rd_addr_i     (exe_rd_addr_i),
-        .rd_we_i       (exe_rd_we_i),
-        .mem_re_i      (exe_mem_re_i),
-        .mem_we_i      (exe_mem_we_i),
-        .instr_id_i    (exe_instr_id_i),
-        .rs1_val_i     (exe_rs1_val_i),
-        .rs2_val_i     (exe_rs2_val_i),
-        .imm_i         (exe_imm_i),
+        .pc_i                (exe_pc_i),
+        .rd_addr_i           (exe_rd_addr_i),
+        .rd_we_i             (exe_rd_we_i),
+        .mem_re_i            (exe_mem_re_i),
+        .mem_we_i            (exe_mem_we_i),
+        .instr_id_i          (exe_instr_id_i),
+        .rs1_val_i           (exe_rs1_val_i),
+        .rs2_val_i           (exe_rs2_val_i),
+        .imm_i               (exe_imm_i),
 
         // from forwarding unit
         .forward_rs1_val_i   (fexe_rs1_val_i),
@@ -226,12 +229,13 @@ module Core (
         .forward_rs2_we_i    (fexe_rs2_we_i),
 
         // to EXE_WB
-        .alu_val_o     (exe_mem_alu_val_i),
-        .rd_addr_o     (exe_mem_rd_addr_i),
-        .rd_we_o       (exe_mem_rd_we_i),
-        .rs2_val_o     (exe_mem_rs2_val_i),
-        .mem_re_o      (exe_mem_mem_re_i),
-        .mem_we_o      (exe_mem_mem_we_i)
+        .alu_val_o           (exe_mem_alu_val_i),
+        .rd_addr_o           (exe_mem_rd_addr_i),
+        .rd_we_o             (exe_mem_rd_we_i),
+        .rs2_val_o           (exe_mem_rs2_val_i),
+        .mem_re_o            (exe_mem_mem_re_i),
+        .mem_we_o            (exe_mem_mem_we_i),
+        .mem_mode_o          (exe_mem_mem_mode_i)
     );
 
     // form EXE_MEM to MEM
@@ -241,9 +245,11 @@ module Core (
     wire [`GPR_WIDTH-1:0] mem_rs2_val_i;
     wire mem_mem_re_i;
     wire mem_mem_we_i;
+    wire [`funct3_width-1:0] mem_mem_mode_i;
 
     EXE_MEM EXE_MEM1(
         .clk_i         (clk_i),
+
         // from EXE
         .alu_val_i     (exe_mem_alu_val_i),
         .rd_addr_i     (exe_mem_rd_addr_i),
@@ -251,6 +257,7 @@ module Core (
         .rs2_val_i     (exe_mem_rs2_val_i),
         .mem_re_i      (exe_mem_mem_re_i),
         .mem_we_i      (exe_mem_mem_we_i),
+        .mem_mode_i    (exe_mem_mem_mode_i),
 
         // to MEM
         // (alu value and rd information are also send to forwarding unit)
@@ -259,7 +266,8 @@ module Core (
         .rd_we_o       (mem_rd_we_i),
         .rs2_val_o     (mem_rs2_val_i),
         .mem_re_o      (mem_mem_re_i),
-        .mem_we_o      (mem_mem_we_i)
+        .mem_we_o      (mem_mem_we_i),
+        .mem_mode_o    (mem_mem_mode_i)
     );
 
     // from MEM to MEM_WB
@@ -275,6 +283,7 @@ module Core (
         .rs2_val_i     (mem_rs2_val_i),
         .mem_re_i      (mem_mem_re_i),
         .mem_we_i      (mem_mem_we_i),
+        .mem_mode_i    (mem_mem_mode_i),
 
         // to MEM_WB
         .rd_val_o      (mem_wb_rd_val_i),
@@ -324,6 +333,7 @@ module Core (
         .exe_mem_alu_val(mem_alu_val_i),
         .exe_mem_rd_addr(mem_rd_addr_i),
         .exe_mem_rd_we(mem_rd_we_i),
+        .exe_mem_mem_re(mem_mem_re_i),
         
 
         // from MEM_WB
@@ -338,4 +348,26 @@ module Core (
         .forward_rs2_we(fexe_rs2_we_i)
     );
 
+    // assign if_id_mode_i = `Normal;
+    // assign id_exe_mode_i = `Normal;
+    // assign exe_mem_mode_i = `Normal;
+
+    hazard_detect_unit hazard_detect_unit1(
+        // from ID
+        .id_rs1_addr(regfile_rs1_addr_i),
+        .id_rs1_re(id_exe_rs1_re_i),
+        .id_rs2_addr(regfile_rs2_addr_i),
+        .id_rs2_re(id_exe_rs2_re_i),
+        // from ID_EXE
+        .id_exe_instr_id(exe_instr_id_i),
+        .id_exe_rd_addr(exe_rd_addr_i),
+        .id_exe_rd_we(exe_rd_we_i),
+        .id_exe_mem_re(exe_mem_re_i),
+        // to IF_ID
+        .if_id_mode(if_id_mode_i),
+        // to ID_EXE
+        .id_exe_mode(id_exe_mode_i),
+        // to IF
+        .if_stall(if_stall_i)
+    );
 endmodule

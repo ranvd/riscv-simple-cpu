@@ -44,6 +44,20 @@ module control_unit (
                 mem_re = `Off;
                 mem_we = `Off;
             end
+            `LB_ID, `LH_ID, `LW_ID, `LBU_ID, `LHU_ID: begin
+                rs1_re = `On;
+                rs2_re = `Off;
+                rd_we = `On;
+                mem_re = `On;
+                mem_we = `Off;
+            end
+            `SB_ID, `SH_ID, `SW_ID : begin
+                rs1_re = `On;
+                rs2_re = `On;
+                rd_we = `Off;
+                mem_re = `Off;
+                mem_we = `On;
+            end
             default: begin
                 rs1_re = `Off;
                 rs2_re = `Off;

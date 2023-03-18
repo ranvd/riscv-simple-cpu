@@ -11,6 +11,7 @@ CFLAGS = -nostdlib -fno-builtin -march=rv32ima -mabi=ilp32 -g -Wall
 CC = ${CROSS_COMPILE}gcc
 OBJCOPY = $(CROSS_COMPILE)objcopy
 OBJDUMP = ${CROSS_COMPILE}objdump
+READELF = ${CROSS_COMPILE}readelf
 
 V_MODULE_PATH1 = core
 V_MODULE_PATH2 = core/inst_idfr
@@ -27,8 +28,8 @@ CONF = config.vlt
 
 .DEFAULT_GOAL := all
 all :
-	@${CC} ${CFLAGS} sim/test.S -o sim/test.elf
-	@${OBJCOPY} -O binary sim/test.elf sim/test.bin
+	${CC} ${CFLAGS} sim/test.S -o sim/test.elf
+	${OBJCOPY} -O binary sim/test.elf sim/test.bin
 
 .PHONY : verilate
 verilate :
@@ -38,13 +39,19 @@ verilate :
 sim :
 	./sim/obj_dir/VCore ./sim/test.bin
 
-.PHONY : code
-code : all
-	@${OBJDUMP} -S ./sim/test.elf | less
+.PHONY : disassemble
+disassemble : all
+	@${OBJDUMP} -S ./sim/test.elf
 
 .PHONY : hex
 hex : all
-	@hexdump -C test.bin
+	@hexdump -e '"%08_ax " 1/4 "%08x" "\n"' ./sim/test.bin
+
+
+.PHONY : analyze
+analyze : all
+	${READELF} -a ./sim/test.elf > ./sim/section_info
+	${OBJDUMP} -D ./sim/test.elf > ./sim/disassemble_info
 
 .PHONY : clean
 clean : 

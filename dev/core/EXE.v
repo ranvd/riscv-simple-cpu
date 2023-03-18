@@ -22,19 +22,20 @@ module EXE (
     output reg rd_we_o,
     output reg [`GPR_WIDTH-1:0] rs2_val_o,
     output reg mem_re_o,
-    output reg mem_we_o
+    output reg mem_we_o,
+    output reg [`funct3_width-1:0] mem_mode_o
 );
-    assign rd_addr_o = rd_addr_i;
-    assign rd_we_o = rd_we_i;
-    assign rs2_val_o = rs2_val_i;
-    assign mem_re_o = mem_re_i;
-    assign mem_we_o = mem_we_i;
-
     // inner module use
     reg signed [`GPR_WIDTH-1:0] rs1_val;
     reg signed [`GPR_WIDTH-1:0] rs2_val;
     wire [1:0] forward_signal;
 
+    assign rd_addr_o = rd_addr_i;
+    assign rd_we_o = rd_we_i;
+    assign rs2_val_o = rs2_val;
+    assign mem_re_o = mem_re_i;
+    assign mem_we_o = mem_we_i;
+    assign mem_mode_o = instr_id_i[9:7]; // this is func3
     assign forward_signal = {forward_rs2_we_i, forward_rs1_we_i};
 
     always @(*) begin
@@ -60,7 +61,8 @@ module EXE (
 
     always @(*) begin
         case (instr_id_i)
-            `ADDI_ID : begin
+            `ADDI_ID, `LB_ID, `LH_ID, `LW_ID, `LBU_ID, `LHU_ID,
+            `SB_ID, `SH_ID, `SW_ID : begin
                 alu_val_o = rs1_val + imm_i;
             end
             `SLTI_ID : begin

@@ -6,6 +6,7 @@
 
 #include "VCore.h"
 #include "VCore__Syms.h"
+#include "conf_testbench.h"
 #include "verilated_vcd_c.h"
 
 #define bswap from_le
@@ -15,30 +16,36 @@ static inline T from_le(T n) {
     return n;
 }
 
-
 void sim_mem_write(VCore_cache *cache, VL_IN64(addr, 47, 0), size_t length,
                    const void *bytes) {
     // Endian transfer
-    for (int i = 0; i < length; i += 4) {
-        cache->writeByte(addr + i, *((unsigned char *)bytes + i + 3));
-        cache->writeByte(addr + i + 1, *((unsigned char *)bytes + i + 2));
-        cache->writeByte(addr + i + 2, *((unsigned char *)bytes + i + 1));
-        cache->writeByte(addr + i + 3, *((unsigned char *)bytes + i + 0));
+    // IF the host is Big Endian
+#ifdef BIG_ENDIAN_HOST
+    for (int i = 0; i < length; i++) {
+        cache->writeByte(addr + i, *((unsigned char *)bytes + length - 1 - i));
     }
+#else
+    for (int i = 0; i < length; i++) {
+        cache->writeByte(addr + i, *((unsigned char *)bytes + i));
+    }
+#endif
 }
 
 void sim_mem_load_bin(VCore_cache *cache, std::string fn) {
     std::ifstream bpfs(fn, std::ios_base::binary | std::ios::ate);
-    std::ifstream::pos_type pos = bpfs.tellg();
-    int f_length = pos;
-    char *buf = new char[f_length];
-    bpfs.seekg(0, std::ios::beg);
-    bpfs.read(buf, f_length);
-    bpfs.close();
+    int f_length = bpfs.tellg();
     std::cout << "file size: " << f_length << "\n";
-
-    for (int i = 0; i < f_length; i += 4) {
-        sim_mem_write(cache, bswap(i), 4, (uint8_t *)buf + i);
+    bpfs.seekg(0, std::ios::beg);
+    char c;
+    for (int i = 0; i < f_length; i++) {
+        bpfs.read(&c, 1);
+        sim_mem_write(cache, bswap(i), 1, &c);
     }
+    bpfs.close();
 }
 
+uint32_t sim_mem_read(VCore_cache *cache, uint32_t addr) {
+    uint32_t val;
+    cache->readByte(addr, val);
+    return val;
+}

@@ -29,8 +29,20 @@
 `define On 1'b1
 `define Off 1'b0
 
+// Used in Forwarding unit
 `define Forward_Rs1 2'b01
 `define Forward_Rs2 2'b10
 `define Forward_Both 2'b11
 
+// Used in Hazard detection unit
+`define Normal 2'b00
+`define Flush 2'b01
+`define Stall 2'b10
+
+
+//////////////////////////////////////////////////////////////////
+//                         Singal define                        //
+//                                                              //
+//////////////////////////////////////////////////////////////////
+// `define Mux_DATA_WIDTH `INST_WIDTH
 `endif

@@ -95,6 +95,8 @@
 `define OP        7'b01_100_11
 `define LUI       7'b01_101_11
 `define AUIPC     7'b00_101_11
+`define LOAD      7'b00_000_11
+`define STORE     7'b01_000_11
 
 `define FUN3_NONE 3'b000
 `define FUN7_NONE 7'b0000000
@@ -113,6 +115,15 @@
 `define SRLI_FUNCT7      7'b0000000
 `define SRAI             3'b101
 `define SRAI_FUNCT7      7'b0100000
+`define LB_FUN3          3'b000
+`define LH_FUN3          3'b001
+`define LW_FUN3          3'b010
+`define LBU_FUN3         3'b100
+`define LHU_FUN3         3'b101
+/* ---------------- I-type ---------------- */
+`define SB_FUN3          3'b000
+`define SH_FUN3          3'b001
+`define SW_FUN3          3'b010
 /* ---------------- R-type ---------------- */
 `define ADD              3'b000
 `define ADD_FUNCT7       7'b0000000
@@ -154,6 +165,15 @@
 `define SLLI_ID          {`SLLI_FUNCT7, `SLLI, `OP_IMM}
 `define SRLI_ID          {`SRLI_FUNCT7, `SRLI, `OP_IMM}
 `define SRAI_ID          {`SRAI_FUNCT7, `SRAI, `OP_IMM}
+`define LB_ID            {`FUN7_NONE, `LB_FUN3, `LOAD}
+`define LH_ID            {`FUN7_NONE, `LH_FUN3, `LOAD}
+`define LW_ID            {`FUN7_NONE, `LW_FUN3, `LOAD}
+`define LBU_ID           {`FUN7_NONE, `LBU_FUN3, `LOAD}
+`define LHU_ID           {`FUN7_NONE, `LHU_FUN3, `LOAD}
+/* ---------------- I-type ID ---------------- */
+`define SB_ID           {`FUN7_NONE, `SB_FUN3, `STORE}
+`define SH_ID           {`FUN7_NONE, `SH_FUN3, `STORE}
+`define SW_ID           {`FUN7_NONE, `SW_FUN3, `STORE}
 /* ---------------- R-type ID ---------------- */
 `define ADD_ID          {`ADD_FUNCT7, `ADD, `OP}
 `define SUB_ID          {`SUB_FUNCT7, `SUB, `OP}
