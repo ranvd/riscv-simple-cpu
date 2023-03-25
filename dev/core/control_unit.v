@@ -4,7 +4,7 @@ module control_unit (
     input wire [`funct3_width-1:0] funct3,
     input wire [`opcode_width-1:0] opcode,
 
-    // to ID
+    // to ID and branch unit
     output reg rs1_re, // new
     output reg rs2_re, // new
     output reg rd_we,
@@ -57,6 +57,20 @@ module control_unit (
                 rd_we = `Off;
                 mem_re = `Off;
                 mem_we = `On;
+            end
+            `JAL_ID : begin // this can be merge to U-type (LUI, AUIPC)
+                rs1_re = `Off;
+                rs2_re = `Off;
+                rd_we = `On;
+                mem_re = `Off;
+                mem_we = `Off;
+            end
+            `JALR_ID : begin // this can be merge to I-type (ADDI, ...)
+                rs1_re = `On;
+                rs2_re = `Off;
+                rd_we = `On;
+                mem_re = `Off;
+                mem_we = `Off;
             end
             default: begin
                 rs1_re = `Off;

@@ -97,11 +97,14 @@
 `define AUIPC     7'b00_101_11
 `define LOAD      7'b00_000_11
 `define STORE     7'b01_000_11
+`define JAL       7'b11_011_11 
+`define JALR      7'b11_001_11
 
 `define FUN3_NONE 3'b000
 `define FUN7_NONE 7'b0000000
 
 
+/* ------------ func3 and func7 ----------- */
 /* ---------------- I-type ---------------- */
 `define ADDI             3'b000
 `define SLTI             3'b010
@@ -120,7 +123,8 @@
 `define LW_FUN3          3'b010
 `define LBU_FUN3         3'b100
 `define LHU_FUN3         3'b101
-/* ---------------- I-type ---------------- */
+`define JALR_FUN3        3'b000
+/* ---------------- S-type ---------------- */
 `define SB_FUN3          3'b000
 `define SH_FUN3          3'b001
 `define SW_FUN3          3'b010
@@ -149,7 +153,7 @@
 
 
 // Pesudo
-`define NOP              `ADDI
+// `define NOP              `ADDI
 
 
 /* ---------------- Instr. ID ---------------- */
@@ -170,7 +174,8 @@
 `define LW_ID            {`FUN7_NONE, `LW_FUN3, `LOAD}
 `define LBU_ID           {`FUN7_NONE, `LBU_FUN3, `LOAD}
 `define LHU_ID           {`FUN7_NONE, `LHU_FUN3, `LOAD}
-/* ---------------- I-type ID ---------------- */
+`define JALR_ID          {`FUN7_NONE, `JALR_FUN3, `JALR}
+/* ---------------- S-type ID ---------------- */
 `define SB_ID           {`FUN7_NONE, `SB_FUN3, `STORE}
 `define SH_ID           {`FUN7_NONE, `SH_FUN3, `STORE}
 `define SW_ID           {`FUN7_NONE, `SW_FUN3, `STORE}
@@ -188,6 +193,7 @@
 /* ---------------- U-type ID ---------------- */
 `define LUI_ID          {`FUN7_NONE, `FUN3_NONE, `LUI}
 `define AUIPC_ID        {`FUN7_NONE, `FUN3_NONE, `AUIPC}
-
+/* ---------------- J-type ID ---------------- */
+`define JAL_ID          {`FUN7_NONE, `FUN3_NONE, `JAL}
 
 `endif

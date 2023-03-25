@@ -13,6 +13,8 @@ module instr_identifier (
     reg AUIPC_ce;
     reg LOAD_ce;
     reg STORE_ce;
+    reg JAL_ce;
+    reg JALR_ce;
 
     always @(*) begin
         case (opcode_i)
@@ -23,6 +25,8 @@ module instr_identifier (
                 AUIPC_ce = `Off;
                 LOAD_ce = `Off;
                 STORE_ce = `Off;
+                JAL_ce = `Off;
+                JALR_ce = `Off;
             end
             `OP : begin
                 OP_IMM_ce = `Off;
@@ -31,6 +35,8 @@ module instr_identifier (
                 AUIPC_ce = `Off;
                 LOAD_ce = `Off;
                 STORE_ce = `Off;
+                JAL_ce = `Off;
+                JALR_ce = `Off;
             end
             `LUI : begin
                 OP_IMM_ce = `Off;
@@ -39,6 +45,8 @@ module instr_identifier (
                 AUIPC_ce = `Off;
                 LOAD_ce = `Off;
                 STORE_ce = `Off;
+                JAL_ce = `Off;
+                JALR_ce = `Off;
             end
             `AUIPC : begin
                 OP_IMM_ce = `Off;
@@ -47,6 +55,8 @@ module instr_identifier (
                 AUIPC_ce = `On;
                 LOAD_ce = `Off;
                 STORE_ce = `Off;
+                JAL_ce = `Off;
+                JALR_ce = `Off;
             end
             `LOAD : begin
                 OP_IMM_ce = `Off;
@@ -55,6 +65,8 @@ module instr_identifier (
                 AUIPC_ce = `Off;
                 LOAD_ce = `On;
                 STORE_ce = `Off;
+                JAL_ce = `Off;
+                JALR_ce = `Off;
             end
             `STORE : begin
                 OP_IMM_ce = `Off;
@@ -63,6 +75,28 @@ module instr_identifier (
                 AUIPC_ce = `Off;
                 LOAD_ce = `Off;
                 STORE_ce = `On;
+                JAL_ce = `Off;
+                JALR_ce = `Off;
+            end
+            `JAL : begin
+                OP_IMM_ce = `Off;
+                OP_ce = `Off;
+                LUI_ce = `Off;
+                AUIPC_ce = `Off;
+                LOAD_ce = `Off;
+                STORE_ce = `Off;
+                JAL_ce = `On;
+                JALR_ce = `Off;
+            end
+            `JALR : begin
+                OP_IMM_ce = `Off;
+                OP_ce = `Off;
+                LUI_ce = `Off;
+                AUIPC_ce = `Off;
+                LOAD_ce = `Off;
+                STORE_ce = `Off;
+                JAL_ce = `Off;
+                JALR_ce = `On;
             end
             default: begin
                 OP_IMM_ce = `Off;
@@ -71,6 +105,8 @@ module instr_identifier (
                 AUIPC_ce = `Off;
                 LOAD_ce = `Off;
                 STORE_ce = `Off;
+                JAL_ce = `Off;
+                JALR_ce = `Off;
                 instr_id_o = `NONE_ID;
             end
         endcase
@@ -108,6 +144,17 @@ module instr_identifier (
 
     STORE_IDFR store_idfr(
         .ce(STORE_ce),
+        .funct3(funct3_i),
+        .instr_id(instr_id_o)
+    );
+
+    JAL_IDFR jal_idfr(
+        .ce(JAL_ce),
+        .instr_id(instr_id_o)
+    );
+
+    JALR_IDFR jalr_idfr(
+        .ce(JALR_ce),
         .funct3(funct3_i),
         .instr_id(instr_id_o)
     );

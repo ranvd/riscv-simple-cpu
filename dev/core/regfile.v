@@ -19,8 +19,6 @@ module regfile(
     
 );
     reg [`GPR_WIDTH-1:0] GPR [`GPR_NUM-1:0];
-    
-    assign GPR[0] = `GPR_WIDTH'h0; // $x0 should always be zero
 
     always @(*) begin
         rs1_val_o = GPR[rs1_addr_i];
@@ -28,7 +26,7 @@ module regfile(
     end
 
     always @(*) begin
-        if(rd_we_i) begin
+        if(rd_we_i && rd_addr_i != 0) begin
             GPR[rd_addr_i] = rd_val_i;
         end else begin
             GPR[0] = `GPR_WIDTH'h0;

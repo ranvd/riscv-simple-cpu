@@ -59,7 +59,7 @@ module ID (
 
     always @(*) begin
         case (opcode_o)
-            `OP_IMM, `LOAD: begin
+            `OP_IMM, `LOAD, `JALR: begin
                 imm_o = `I_TYPE_IMM(instr_i);
             end
             `LUI, `AUIPC : begin
@@ -68,7 +68,9 @@ module ID (
             `STORE : begin
                 imm_o = `S_TYPE_IMM(instr_i);
             end
-
+            `JAL : begin
+                imm_o = `J_TYPE_IMM(instr_i);
+            end
             default:
                 imm_o = 32'b0;
         endcase

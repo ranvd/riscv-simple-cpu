@@ -38,7 +38,8 @@
 `define Normal 2'b00
 `define Flush 2'b01
 `define Stall 2'b10
-
+`define MAX_Stall {32{1'b1}}
+`define Hazard_Signal_Width $clog2(`MAX_Stall)
 
 //////////////////////////////////////////////////////////////////
 //                         Singal define                        //

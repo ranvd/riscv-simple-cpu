@@ -141,6 +141,9 @@ module EXE (
             `AUIPC_ID : begin
                 alu_val_o = pc_i + imm_i;
             end
+            `JAL_ID, `JALR_ID : begin
+                alu_val_o  = pc_i + 4;
+            end
             default: begin
                 alu_val_o = 32'b0;
             end
