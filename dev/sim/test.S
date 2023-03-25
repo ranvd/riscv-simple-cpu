@@ -9,8 +9,9 @@ _start:
 	la x1, _array # 
 	lh x2, 1(x1)
 	sw x2, 0(x1)
-	addi x3, x0, 0x10
-	addi x4, x0, 0x100
+	lh x3, 1(x1)
+	# addi x3, x0, 0x10
+	# addi x4, x0, 0x100
 	
 # .data
 _array:	
