@@ -99,6 +99,7 @@
 `define STORE     7'b01_000_11
 `define JAL       7'b11_011_11 
 `define JALR      7'b11_001_11
+`define BRANCH    7'b11_000_11
 
 `define FUN3_NONE 3'b000
 `define FUN7_NONE 7'b0000000
@@ -149,7 +150,13 @@
 `define OR_FUNCT7        7'b0000000
 `define AND              3'b111
 `define AND_FUNCT7       7'b0000000
-
+/* ---------------- B-type ---------------- */
+`define BEQ              3'b000
+`define BNE              3'b001
+`define BLT              3'b100
+`define BGE              3'b101
+`define BLTU             3'b110
+`define BGEU             3'b111
 
 
 // Pesudo
@@ -176,24 +183,31 @@
 `define LHU_ID           {`FUN7_NONE, `LHU_FUN3, `LOAD}
 `define JALR_ID          {`FUN7_NONE, `JALR_FUN3, `JALR}
 /* ---------------- S-type ID ---------------- */
-`define SB_ID           {`FUN7_NONE, `SB_FUN3, `STORE}
-`define SH_ID           {`FUN7_NONE, `SH_FUN3, `STORE}
-`define SW_ID           {`FUN7_NONE, `SW_FUN3, `STORE}
+`define SB_ID            {`FUN7_NONE, `SB_FUN3, `STORE}
+`define SH_ID            {`FUN7_NONE, `SH_FUN3, `STORE}
+`define SW_ID            {`FUN7_NONE, `SW_FUN3, `STORE}
 /* ---------------- R-type ID ---------------- */
-`define ADD_ID          {`ADD_FUNCT7, `ADD, `OP}
-`define SUB_ID          {`SUB_FUNCT7, `SUB, `OP}
-`define SLL_ID          {`SLL_FUNCT7, `SLL, `OP}
-`define SLT_ID          {`SLT_FUNCT7, `SLT, `OP}
-`define SLTU_ID         {`SLTU_FUNCT7, `SLTU, `OP}
-`define XOR_ID          {`XOR_FUNCT7, `XOR, `OP}
-`define SRL_ID          {`SRL_FUNCT7, `SRL, `OP}
-`define SRA_ID          {`SRA_FUNCT7, `SRA, `OP}
-`define OR_ID           {`OR_FUNCT7, `OR, `OP}
-`define AND_ID          {`AND_FUNCT7, `AND, `OP}
+`define ADD_ID           {`ADD_FUNCT7, `ADD, `OP}
+`define SUB_ID           {`SUB_FUNCT7, `SUB, `OP}
+`define SLL_ID           {`SLL_FUNCT7, `SLL, `OP}
+`define SLT_ID           {`SLT_FUNCT7, `SLT, `OP}
+`define SLTU_ID          {`SLTU_FUNCT7, `SLTU, `OP}
+`define XOR_ID           {`XOR_FUNCT7, `XOR, `OP}
+`define SRL_ID           {`SRL_FUNCT7, `SRL, `OP}
+`define SRA_ID           {`SRA_FUNCT7, `SRA, `OP}
+`define OR_ID            {`OR_FUNCT7, `OR, `OP}
+`define AND_ID           {`AND_FUNCT7, `AND, `OP}
+/* ---------------- B-type ID ---------------- */
+`define BEQ_ID           {`FUN7_NONE, `BEQ, `BRANCH}
+`define BNE_ID           {`FUN7_NONE, `BNE, `BRANCH}
+`define BLT_ID           {`FUN7_NONE, `BLT, `BRANCH}
+`define BGE_ID           {`FUN7_NONE, `BGE, `BRANCH}
+`define BLTU_ID          {`FUN7_NONE, `BLTU, `BRANCH}
+`define BGEU_ID          {`FUN7_NONE, `BGEU, `BRANCH}
 /* ---------------- U-type ID ---------------- */
-`define LUI_ID          {`FUN7_NONE, `FUN3_NONE, `LUI}
-`define AUIPC_ID        {`FUN7_NONE, `FUN3_NONE, `AUIPC}
+`define LUI_ID           {`FUN7_NONE, `FUN3_NONE, `LUI}
+`define AUIPC_ID         {`FUN7_NONE, `FUN3_NONE, `AUIPC}
 /* ---------------- J-type ID ---------------- */
-`define JAL_ID          {`FUN7_NONE, `FUN3_NONE, `JAL}
+`define JAL_ID           {`FUN7_NONE, `FUN3_NONE, `JAL}
 
 `endif

@@ -72,6 +72,13 @@ module control_unit (
                 mem_re = `Off;
                 mem_we = `Off;
             end
+            `BEQ_ID, `BNE_ID, `BLT_ID, `BGE_ID, `BLTU_ID, `BGEU_ID : begin
+                rs1_re = `On;
+                rs2_re = `On;
+                rd_we = `Off;
+                mem_re = `Off;
+                mem_we = `Off;
+            end
             default: begin
                 rs1_re = `Off;
                 rs2_re = `Off;

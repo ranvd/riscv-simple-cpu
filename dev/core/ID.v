@@ -71,6 +71,9 @@ module ID (
             `JAL : begin
                 imm_o = `J_TYPE_IMM(instr_i);
             end
+            `BRANCH : begin
+                imm_o = `B_TYPE_IMM(instr_i);
+            end
             default:
                 imm_o = 32'b0;
         endcase

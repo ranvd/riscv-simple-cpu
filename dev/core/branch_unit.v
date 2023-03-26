@@ -59,6 +59,54 @@ module branch_unit (
                 pc_o = rs1_val + imm_i;
                 pc_we = `On;
             end
+            `BEQ_ID : begin
+                pc_o = pc_i + imm_i;
+                if (rs1_val == rs2_val) begin
+                    pc_we = `On;
+                end else begin
+                    pc_we = `Off;
+                end
+            end
+            `BNE_ID : begin
+                pc_o = pc_i + imm_i;
+                if (rs1_val != rs2_val) begin
+                    pc_we = `On;
+                end else begin
+                    pc_we = `Off;
+                end
+            end
+            `BLT_ID : begin
+                pc_o = pc_i + imm_i;
+                if (rs1_val < rs2_val) begin
+                    pc_we = `On;
+                end else begin
+                    pc_we = `Off;
+                end
+            end
+            `BGE_ID : begin
+                pc_o = pc_i + imm_i;
+                if (rs1_val > rs2_val) begin
+                    pc_we = `On;
+                end else begin
+                    pc_we = `Off;
+                end
+            end
+            `BLTU_ID : begin
+                pc_o = pc_i + imm_i;
+                if ($unsigned(rs1_val) < $unsigned(rs2_val)) begin
+                    pc_we = `On;
+                end else begin
+                    pc_we = `Off;
+                end
+            end
+            `BGEU_ID : begin
+                pc_o = pc_i + imm_i;
+                if ($unsigned(rs1_val) > $unsigned(rs2_val)) begin
+                    pc_we = `On;
+                end else begin
+                    pc_we = `Off;
+                end
+            end
             default : begin
                 pc_o = 0;
                 pc_we = `Off;

@@ -25,7 +25,7 @@ module IF_ID (
             instr_o <= instr_o;
         end else if (flush_e) begin
             pc_o <= `SYS_ADDR_SPACE'b0;
-            instr_o <= `INST_WIDTH;
+            instr_o <= `INST_WIDTH'b0;
         end else begin
             pc_o <= pc_i;
             instr_o <= instr_i;

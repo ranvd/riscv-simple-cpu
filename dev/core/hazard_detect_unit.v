@@ -78,6 +78,20 @@ module hazard_detect_unit (
                     mem_to_id_hazard = `Off;
                 end
             end
+            `BEQ_ID, `BNE_ID, `BLT_ID, `BGE_ID, `BLTU_ID, `BGEU_ID : begin
+                branch_hazard = `On;
+                if ((id_rs1_addr == id_exe_rd_addr || id_rs2_addr == id_exe_rd_addr ) && id_exe_rd_we) begin
+                    exe_to_id_hazard = `On;
+                end else begin
+                    exe_to_id_hazard = `Off;
+                end
+                if ((id_rs1_addr == exe_mem_rd_addr || id_rs2_addr == exe_mem_rd_addr) && exe_mem_rd_we && exe_mem_mem_re) begin
+                    mem_to_id_hazard = `On;
+                end else begin
+                    mem_to_id_hazard = `Off;
+                end
+            end
+
             default : begin
                 branch_hazard = `Off;
             end

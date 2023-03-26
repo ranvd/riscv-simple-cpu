@@ -27,8 +27,9 @@ CONF = config.vlt
 # VPATH = core/
 
 .DEFAULT_GOAL := all
+No = 1
 all :
-	${CC} ${CFLAGS} sim/test.S -o sim/test.elf
+	${CC} ${CFLAGS} sim/test_${No}.S -o sim/test.elf
 	${OBJCOPY} -O binary sim/test.elf sim/test.bin
 
 .PHONY : verilate
@@ -40,11 +41,11 @@ sim :
 	./sim/obj_dir/VCore ./sim/test.bin
 
 .PHONY : disassemble
-disassemble : all
+disassemble :
 	@${OBJDUMP} -S ./sim/test.elf
 
 .PHONY : hex
-hex : all
+hex :
 	@hexdump -e '"%08_ax " 1/4 "%08x" "\n"' ./sim/test.bin
 
 
