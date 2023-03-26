@@ -85,7 +85,7 @@ module branch_unit (
             end
             `BGE_ID : begin
                 pc_o = pc_i + imm_i;
-                if (rs1_val > rs2_val) begin
+                if (rs1_val >= rs2_val) begin
                     pc_we = `On;
                 end else begin
                     pc_we = `Off;
@@ -101,7 +101,7 @@ module branch_unit (
             end
             `BGEU_ID : begin
                 pc_o = pc_i + imm_i;
-                if ($unsigned(rs1_val) > $unsigned(rs2_val)) begin
+                if ($unsigned(rs1_val) >= $unsigned(rs2_val)) begin
                     pc_we = `On;
                 end else begin
                     pc_we = `Off;

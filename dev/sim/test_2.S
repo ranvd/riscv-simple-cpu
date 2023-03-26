@@ -4,8 +4,8 @@
 
 _start:
 	addi x1, x0, 1
-	addi x2, x0, 2
-	bge x2, x1, func2 # if x2 >x1t1 then target
+	addi x2, x0, -1
+	bgeu x2, x1, func2 # if x2 >x1t1 then target
 	jal func
 
 func:
