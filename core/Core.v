@@ -3,7 +3,8 @@
 
 module Core (
     input wire clk_i,
-    input wire rst_i
+    input wire rst_i,
+    output wire anomaly_o /*verilator public*/
 );
     wire [`INST_WIDTH-1:0] if_id_instr_i;
     wire [`SYS_ADDR_SPACE-1:0] if_id_pc_i;
@@ -22,7 +23,8 @@ module Core (
         .pc_we        (if_pc_we_i),
         // to IF_ID
         .inst_o       (if_id_instr_i),
-        .pc_o         (if_id_pc_i)
+        .pc_o         (if_id_pc_i),
+        .anomaly_o    (anomaly_o)
     );
 
     wire [1:0] if_id_mode_i;  // used for hazard detection unit

@@ -29,6 +29,9 @@ void Vclocks(VCore *top, VerilatedVcdC *tfp, int n) {
         main_time += TIME_SLICE;
         tfp->dump(main_time);
 
+        if (top->anomaly_o) break;
+
+
 #ifdef TRACE_REGs
         /*
          * "\033[1;32m" will set the terminal color to green
@@ -55,6 +58,7 @@ void Vclocks(VCore *top, VerilatedVcdC *tfp, int n) {
         std::cout << "|||||||||||||||||||||||||||||||||||\n";
 #endif
     }
+    return;
 }
 
 int main(int argc, char **argv) {
@@ -85,7 +89,7 @@ int main(int argc, char **argv) {
     Vclocks(top, tfp, 1);
 
     top->rst_i = 0;
-    Vclocks(top, tfp, 20);
+    Vclocks(top, tfp, 1000000);
 
 #ifdef END_REGs
         /*
@@ -112,11 +116,6 @@ int main(int argc, char **argv) {
         }
         std::cout << "|||||||||||||||||||||||||||||||||||\n";
 #endif
-    int base = 0x1c;
-    printf("read data cache: %x\n", sim_mem_read(top->Core->MEM1->data_cache1 , base));
-    printf("read data cache: %x\n", sim_mem_read(top->Core->MEM1->data_cache1, base+1));
-    printf("read data cache: %x\n", sim_mem_read(top->Core->MEM1->data_cache1, base+2));
-    printf("read data cache: %x\n", sim_mem_read(top->Core->MEM1->data_cache1, base+3));
     top->final();
     tfp->close();
 

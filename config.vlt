@@ -6,6 +6,8 @@ public -module "regfile" -task "writeReg"
 public -module "regfile" -task "readReg"
 public -module "regfile" -task "readRegs"
 
+public -module "Core" -var "anomaly_o"
+
 lint_off -rule UNSIGNED
 lint_on -rule WIDTHEXPAND
 lint_on -rule LATCH

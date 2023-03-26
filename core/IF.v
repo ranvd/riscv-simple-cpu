@@ -16,7 +16,8 @@ module IF (
 
     // to IF_ID
     output reg[`INST_WIDTH-1:0] inst_o,
-    output reg[`SYS_ADDR_SPACE-1:0] pc_o
+    output reg[`SYS_ADDR_SPACE-1:0] pc_o,
+    output reg anomaly_o
 );
     wire [`SYS_ADDR_SPACE-1:0] pc_wire;
     wire [`CACHE_DATA_WIDTH-1:0] w_data_zero;
@@ -37,6 +38,13 @@ module IF (
     );
     
     assign pc_o = pc_wire;
+    always @(*) begin
+        if (inst_o[1:0] != 2'b11) begin
+            anomaly_o = `On;
+        end else begin
+            anomaly_o = `Off;
+        end
+    end
     // always @(*) begin
     //     if(pc_we) begin
     //         pc_o = pc_i;

@@ -2,3 +2,4 @@
 gtkwave*
 xpack*
 obj_dir/
+testbench/rv32ui
