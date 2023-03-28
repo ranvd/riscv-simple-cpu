@@ -9,7 +9,7 @@ func:
 _start:
 	jal func  # jump to func and save position to ra
 	addi x3, x1, 1
-
+	
 	# la x1, func2
 	# ret
 	# addi x10, x0, 16

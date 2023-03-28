@@ -16,7 +16,7 @@ READELF = ${CROSS_COMPILE}readelf
 MODULE_PATH1 = core
 MODULE_PATH2 = core/inst_idfr
 
-FILE = testbench.cpp \
+FILE = sim_core.cpp \
 			sim_mem.cpp \
 			Core.v \
 
@@ -26,12 +26,16 @@ CONF = config.vlt
 # VPATH = sim/
 # VPATH = core/
 
-FILE_PATH = testbench/self_test
-CC_FILE = $(wildcard $(FILE_PATH)/*.S)
+CUSTOM_PATH = testbench/self_test
+CC_FILE = $(wildcard $(CUSTOM_PATH)/*.S)
 CC_OUT_FILE = $(patsubst %.S, %.bin, $(CC_FILE))
 
-.DEFAULT_GOAL := all
-all : $(CC_OUT_FILE)
+.PHONY : verilate
+verilate :
+	verilator -y ${MODULE_PATH1} -y ${MODULE_PATH2} -Mdir ${SIM_DIR} -cc --exe --build ${FILE} ${CONF} --trace
+
+.PHONY := custom_file
+custom_file : $(CC_OUT_FILE)
 
 %.bin : %.elf
 	${OBJCOPY} -O binary $^ $@
@@ -40,31 +44,26 @@ all : $(CC_OUT_FILE)
 %.elf : %.S
 	${CC} ${CFLAGS} $^ -o $@
 
-
-.PHONY : verilate
-verilate :
-	verilator -y ${MODULE_PATH1} -y ${MODULE_PATH2} -Mdir ${SIM_DIR} -cc --exe --build ${FILE} ${CONF} --trace
-
-
-No = 1
-.PHONY : sim
-sim :
-	./$(SIM_DIR)/VCore ./$(FILE_PATH)/test_$(No).bin
+testFile = test_1.bin
+.PHONY : custom_test
+custom_test :
+	./$(SIM_DIR)/VCore ./$(CUSTOM_PATH)/$(testFile)
 
 .PHONY : disassemble
 disassemble :
-	@${OBJDUMP} -S ./$(FILE_PATH)/test_$(No).elf
+	@${OBJDUMP} -S ./$(CUSTOM_PATH)/$(testFile)
 
 .PHONY : hex
 hex :
-	@hexdump -e '"%08_ax " 1/4 "%08x" "\n"' ./$(FILE_PATH)/test_$(No).bin
+	@hexdump -e '"%08_ax " 1/4 "%08x" "\n"' ./$(CUSTOM_PATH)/$(testFile)
+
 
 .PHONY : analyze
 analyze : all
-	${READELF} -a ./$(FILE_PATH)/test_$(No).elf > ./$(FILE_PATH)/section_info
-	${OBJDUMP} -D ./$(FILE_PATH)/test_$(No).elf > ./$(FILE_PATH)/disassemble_info
+	${READELF} -a ./$(CUSTOM_PATH)/$(testFile) > ./$(CUSTOM_PATH)/section_info
+	${OBJDUMP} -D ./$(CUSTOM_PATH)/$(testFile) > ./$(CUSTOM_PATH)/disassemble_info
 
 
 .PHONY : clean
 clean : 
-	rm -rf sim/obj_dir wave.vcd $(FILE_PATH)/*.elf $(FILE_PATH)/*.bin
+	rm -rf sim/obj_dir wave.vcd $(CUSTOM_PATH)/*.elf $(CUSTOM_PATH)/*.bin

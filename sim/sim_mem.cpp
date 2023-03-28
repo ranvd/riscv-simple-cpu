@@ -6,7 +6,7 @@
 
 #include "VCore.h"
 #include "VCore__Syms.h"
-#include "conf_testbench.h"
+#include "conf_core.h"
 #include "verilated_vcd_c.h"
 
 #define bswap from_le
@@ -34,7 +34,7 @@ void sim_mem_write(VCore_cache *cache, VL_IN64(addr, 47, 0), size_t length,
 void sim_mem_load_bin(VCore_cache *cache, std::string fn) {
     std::ifstream bpfs(fn, std::ios_base::binary | std::ios::ate);
     int f_length = bpfs.tellg();
-    std::cout << "file size: " << f_length << "\n";
+    // std::cout << "file size: " << f_length << "\n";
     bpfs.seekg(0, std::ios::beg);
     char c;
     for (int i = 0; i < f_length; i++) {

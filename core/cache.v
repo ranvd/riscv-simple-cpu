@@ -1,7 +1,13 @@
 /* verilator lint_off LATCH */
 `include "conf_general_define.v"
 
-module cache (
+module cache #(
+    parameter word_offset = `CACHE_WORD_OFFSET,
+    parameter block_offset = `CACHE_BLOCK_OFFSET,
+    parameter index = `CACHE_INDEX,
+    parameter tag = `CACHE_TAG
+)
+(
     input wire re_i, // read enable
     input wire we_i, // write enable
     input wire [`SYS_ADDR_SPACE-1:0] r_addr_i,
@@ -11,13 +17,16 @@ module cache (
 
     output reg[`CACHE_DATA_WIDTH-1:0] data_o
 );
+    // parameter integer cache_width = tag+(2**word_offset)*8*(2**block_offset);
+    // parameter integer cache_number = 2**index;
+    // reg [cache_width:0] cache[cache_number:0];
+
+    
     reg [7:0] mem [`MEM_SIZE-1:0];
     reg err_siganl;
     wire[`MEM_ADDR_SPACE-1:0] r_addr;
     wire[`MEM_ADDR_SPACE-1:0] w_addr;
 
-    // assign r_addr = {r_addr_i[`MEM_ADDR_SPACE-1:2], 2'b0};
-    // assign w_addr = {w_addr_i[`MEM_ADDR_SPACE-1:2], 2'b0};
     assign r_addr = r_addr_i;
     assign w_addr = w_addr_i;
 
@@ -44,10 +53,10 @@ module cache (
                     mem[w_addr+1] = w_data_i[15:8];
                     mem[w_addr+2] = w_data_i[23:16];
                     mem[w_addr+3] = w_data_i[31:24];
-                end 
+                end
                 default: begin
                     err_siganl = `On;
-                end 
+                end
             endcase
         end
     end

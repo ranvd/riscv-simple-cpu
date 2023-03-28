@@ -3,6 +3,8 @@
 
 `include "conf_riscv_spec.v"
 
+`define WORD 4
+
 //////////////////////////////////////////////////////////////////
 //                        Hardward define                       //
 //                                                              //
@@ -20,7 +22,13 @@
 `define START_ADDR `SYS_ADDR_SPACE'b0
 `define MEM_BASE `START_ADDR
 
+// address in cache can be seperate as tag, index, block offset, word offset.
+// In this seting, the cache size will be 64KB( 2^12 * 4 * 4 )
 `define CACHE_DATA_WIDTH `INST_WIDTH
+`define CACHE_WORD_OFFSET $clog2(`WORD)
+`define CACHE_BLOCK_OFFSET 2
+`define CACHE_INDEX 12
+`define CACHE_TAG `SYS_ADDR_SPACE - `CACHE_WORD_OFFSET - `CACHE_BLOCK_OFFSET - `CACHE_INDEX
 
 //////////////////////////////////////////////////////////////////
 //                         Singal define                        //

@@ -4,9 +4,10 @@
 #include <iostream>
 #include <string>
 
+#include <unistd.h>
 #include "VCore.h"
 #include "VCore__Syms.h"
-#include "conf_testbench.h"
+#include "conf_core.h"
 #include "sim_mem.h"
 #include "verilated_vcd_c.h"
 
@@ -18,6 +19,7 @@ vluint64_t main_time = 0;
 double sc_time_stamp() { return (main_time); }
 
 void Vclocks(VCore *top, VerilatedVcdC *tfp, int n) {
+    int counter = 0;
     for (int i = 0; i < n; i++) {
         top->clk_i = 0;
         top->eval();
@@ -29,8 +31,9 @@ void Vclocks(VCore *top, VerilatedVcdC *tfp, int n) {
         main_time += TIME_SLICE;
         tfp->dump(main_time);
 
-        if (top->anomaly_o) break;
-
+        if (top->anomaly_o) {
+            if (counter++ > 5) break;
+        }
 
 #ifdef TRACE_REGs
         /*
@@ -69,6 +72,10 @@ int main(int argc, char **argv) {
         printf("Please provide riscv test elf file\n");
         return -1;
     }
+    if (access(argv[1], F_OK)){
+        printf("File not exist\n");
+        return -1;
+    }
 
     VerilatedVcdC *tfp = new VerilatedVcdC();
 
@@ -89,37 +96,39 @@ int main(int argc, char **argv) {
     Vclocks(top, tfp, 1);
 
     top->rst_i = 0;
-    Vclocks(top, tfp, 1000000);
+    Vclocks(top, tfp, 2000000);
 
 #ifdef END_REGs
-        /*
-         * "\033[1;32m" will set the terminal color to green
-         * "\033[0m\n" will reset the terminal color.
-         * \033 equal \e which means ESC in the keyboard.
-         */
-        VlUnpacked<unsigned int, 32> regVal;
-        std::cout << "-------------" << main_time << "-------------"
-                  << std::endl;
-        top->Core->regfile1->readRegs(regVal);
-        for (int reg = 0; reg < 32; reg++) {
-            if (regVal[reg]) {
-                if (reg / 10)
-                    printf("X%d: \033[1;32m0x%08X\033[0m\n", reg, regVal[reg]);
-                else
-                    printf("X%d:  \033[1;32m0x%08X\033[0m\n", reg, regVal[reg]);
-            } else {
-                if (reg / 10)
-                    printf("X%d: 0x%08X\n", reg, regVal[reg]);
-                else
-                    printf("X%d:  0x%08X\n", reg, regVal[reg]);
-            }
+    /*
+     * "\033[1;32m" will set the terminal color to green
+     * "\033[0m\n" will reset the terminal color.
+     * \033 equal \e which means ESC in the keyboard.
+     */
+    VlUnpacked<unsigned int, 32> regVal;
+    std::cout << "-------------" << main_time << "-------------" << std::endl;
+    top->Core->regfile1->readRegs(regVal);
+    for (int reg = 0; reg < 32; reg++) {
+        if (regVal[reg]) {
+            if (reg / 10)
+                printf("X%d: \033[1;32m0x%08X\033[0m\n", reg, regVal[reg]);
+            else
+                printf("X%d:  \033[1;32m0x%08X\033[0m\n", reg, regVal[reg]);
+        } else {
+            if (reg / 10)
+                printf("X%d: 0x%08X\n", reg, regVal[reg]);
+            else
+                printf("X%d:  0x%08X\n", reg, regVal[reg]);
         }
-        std::cout << "|||||||||||||||||||||||||||||||||||\n";
+    }
+    std::cout << "|||||||||||||||||||||||||||||||||||\n";
 #endif
+
+    unsigned int a0 = 0;
+    top->Core->regfile1->readReg(10, a0);
     top->final();
     tfp->close();
 
     delete top;
     delete tfp;
-    return 0;
+    return a0;
 }

@@ -134,7 +134,7 @@ module hazard_detect_unit (
         if (branch_hazard) begin
             if_id_mode_2 = `Flush;
             id_exe_mode_2 = `Normal;
-            if_stall_2 = `Off;
+            if_stall_2 = `On;
             signal_cycle_2 = 1;
         end else begin
             if_id_mode_2 = `Normal;
