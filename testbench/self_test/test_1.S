@@ -2,37 +2,21 @@
 # .text			# Define beginning of text section
 .global	_start		# Define entry _start
 
-func:
-	addi x2, x0, 1
-	ret
-
 _start:
-	jal func  # jump to func and save position to ra
-	addi x3, x1, 1
+	li gp, 16
+	li tp, 8
+	add a4, gp, tp
+	li t2, 0
+	bne gp, tp, func
+	j else
+
+else:
+	li x10, 1
+	j exit
+
+func:
+	li x10, 8
 	
-	# la x1, func2
-	# ret
-	# addi x10, x0, 16
-
-
-	# la x1, _array # 
-	# lh x2, 1(x1)
-	# sw x2, 0(x1)
-	# lh x3, 1(x1)
-	# addi x3, x0, 0x10
-	# addi x4, x0, 0x100
-
-# func2:
-# 	addi x3, x0, 0
-# 	addi x4, x0, 0
-# 	addi x5, x0, 0
-# 	ret
-
-# .data
-# _array:	
-# 	.byte 0x10
-# 	.byte 0x20
-# 	.byte 0x30
-# 	.byte 0x40
-
-# 	.end			# End of file
+exit:
+	nop
+	nop

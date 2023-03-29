@@ -1,5 +1,7 @@
 module hazard_detect_unit (
-    
+    // from branch unit
+    input wire pc_we,
+
     // from ID
     input wire [`INST_ID_LEN-1:0] id_instr_id,
     input wire [`GPR_ADDR_SPACE-1:0] id_rs1_addr,
@@ -79,7 +81,11 @@ module hazard_detect_unit (
                 end
             end
             `BEQ_ID, `BNE_ID, `BLT_ID, `BGE_ID, `BLTU_ID, `BGEU_ID : begin
-                branch_hazard = `On;
+                if (pc_we) begin
+                    branch_hazard = `On;
+                end else begin
+                    branch_hazard = `Off;
+                end
                 if ((id_rs1_addr == id_exe_rd_addr || id_rs2_addr == id_exe_rd_addr ) && id_exe_rd_we) begin
                     exe_to_id_hazard = `On;
                 end else begin
@@ -134,7 +140,7 @@ module hazard_detect_unit (
         if (branch_hazard) begin
             if_id_mode_2 = `Flush;
             id_exe_mode_2 = `Normal;
-            if_stall_2 = `On;
+            if_stall_2 = `Off;
             signal_cycle_2 = 1;
         end else begin
             if_id_mode_2 = `Normal;

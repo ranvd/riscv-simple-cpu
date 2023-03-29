@@ -39,7 +39,7 @@ module IF (
     
     assign pc_o = pc_wire;
     always @(*) begin
-        if (inst_o[1:0] != 2'b11) begin
+        if (inst_o[1:0] != 2'b11 || inst_o == 32'b1110011) begin
             anomaly_o = `On;
         end else begin
             anomaly_o = `Off;

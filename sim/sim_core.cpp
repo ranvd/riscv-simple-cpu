@@ -1,10 +1,10 @@
 #include <assert.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <string>
 
-#include <unistd.h>
 #include "VCore.h"
 #include "VCore__Syms.h"
 #include "conf_core.h"
@@ -16,6 +16,8 @@
 
 vluint64_t main_time = 0;
 
+unsigned int a0;  // used for fail check
+int anomaly = 0;
 double sc_time_stamp() { return (main_time); }
 
 void Vclocks(VCore *top, VerilatedVcdC *tfp, int n) {
@@ -32,7 +34,21 @@ void Vclocks(VCore *top, VerilatedVcdC *tfp, int n) {
         tfp->dump(main_time);
 
         if (top->anomaly_o) {
+            if (!anomaly) {
+                anomaly = 1;
+            }
             if (counter++ > 5) break;
+        } else {
+            counter = 0;
+        }
+
+        if (anomaly) {
+            anomaly++;
+            if (anomaly > 4) {
+                anomaly = 0;
+                top->Core->regfile1->readReg(10, a0);
+                if (a0) break;
+            }
         }
 
 #ifdef TRACE_REGs
@@ -72,7 +88,7 @@ int main(int argc, char **argv) {
         printf("Please provide riscv test elf file\n");
         return -1;
     }
-    if (access(argv[1], F_OK)){
+    if (access(argv[1], F_OK)) {
         printf("File not exist\n");
         return -1;
     }
@@ -123,12 +139,14 @@ int main(int argc, char **argv) {
     std::cout << "|||||||||||||||||||||||||||||||||||\n";
 #endif
 
-    unsigned int a0 = 0;
-    top->Core->regfile1->readReg(10, a0);
     top->final();
     tfp->close();
 
     delete top;
     delete tfp;
-    return a0;
+    // printf("%u\n", a0);
+    if (a0)
+        return 1;
+    else
+        return 0;
 }

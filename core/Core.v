@@ -383,6 +383,8 @@ module Core (
 
     reg [`Hazard_Signal_Width-1:0] signal_cycle_a; // this variable isn't be used for now.
     hazard_detect_unit hazard_detect_unit1(
+        // from branch unit
+        .pc_we            (if_pc_we_i),
         // from ID
         .id_instr_id      (id_exe_instr_id_i),
         .id_rs1_addr      (regfile_rs1_addr_i),

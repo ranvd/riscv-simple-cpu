@@ -96,6 +96,7 @@ module EXE (
             end
             `SRAI_ID : begin
                 alu_val_o = rs1_val >>> imm_i[4:0];
+                // alu_val_o = rs1_val + imm_i;
             end
             `ADD_ID : begin
                 alu_val_o = rs1_val + rs2_val;
@@ -110,7 +111,7 @@ module EXE (
                 if (rs1_val < rs2_val) begin
                     alu_val_o = `GPR_WIDTH'h1;
                 end else begin
-                    alu_val_o = `GPR_WIDTH'h1;
+                    alu_val_o = `GPR_WIDTH'h0;
                 end
             end
             `SLTU_ID : begin
