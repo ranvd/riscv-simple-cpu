@@ -30,7 +30,9 @@ module control_unit (
                 mem_we = `Off;
             end
             `ADD_ID, `SUB_ID, `SLL_ID, `SLT_ID, `SLTU_ID,
-            `XOR_ID, `SRL_ID, `SRA_ID, `OR_ID, `AND_ID : begin
+            `XOR_ID, `SRL_ID, `SRA_ID, `OR_ID, `AND_ID, 
+            `MUL_ID, `MULH_ID, `MULHSU_ID, `MULHU_ID, 
+            `DIV_ID, `DIVU_ID, `REM_ID, `REMU_ID: begin
                 rs1_re = `On;
                 rs2_re = `On;
                 rd_we = `On;

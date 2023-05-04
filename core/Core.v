@@ -220,7 +220,12 @@ module Core (
     wire exe_mem_mem_we_i;
     wire [`funct3_width-1:0] exe_mem_mem_mode_i;
 
+    // from EXE to hazard detect unit
+    wire exe_ready_i;
+
     EXE EXE1(
+        .clk_i               (clk_i),
+
         // from ID_EXE
         .pc_i                (exe_pc_i),
         .rd_addr_i           (exe_rd_addr_i),
@@ -245,7 +250,10 @@ module Core (
         .rs2_val_o           (exe_mem_rs2_val_i),
         .mem_re_o            (exe_mem_mem_re_i),
         .mem_we_o            (exe_mem_mem_we_i),
-        .mem_mode_o          (exe_mem_mem_mode_i)
+        .mem_mode_o          (exe_mem_mem_mode_i),
+
+        // to hazard unit
+        .ready_o             (exe_ready_i)
     );
 
     // form EXE_MEM to MEM
@@ -397,7 +405,9 @@ module Core (
         .id_exe_rd_addr   (exe_rd_addr_i),
         .id_exe_rd_we     (exe_rd_we_i),
         .id_exe_mem_re    (exe_mem_re_i),
-
+        
+        // from EXE stage
+        .exe_ready        (exe_ready_i),
         // from EXE_MEM
         .exe_mem_mem_re   (mem_mem_re_i),
         .exe_mem_rd_addr  (mem_rd_addr_i),

@@ -2,7 +2,7 @@
 
 path="../sim/obj_dir/"
 exec="VCore"
-bench="rv32ui"
+bench="rv32um"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -17,4 +17,4 @@ do
         # exit 1
     fi
 done
-echo "PASS All"
+# echo "PASS All"

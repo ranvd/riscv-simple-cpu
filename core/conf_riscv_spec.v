@@ -125,10 +125,12 @@
 `define LBU_FUN3         3'b100
 `define LHU_FUN3         3'b101
 `define JALR_FUN3        3'b000
+
 /* ---------------- S-type ---------------- */
 `define SB_FUN3          3'b000
 `define SH_FUN3          3'b001
 `define SW_FUN3          3'b010
+
 /* ---------------- R-type ---------------- */
 `define ADD              3'b000
 `define ADD_FUNCT7       7'b0000000
@@ -150,6 +152,17 @@
 `define OR_FUNCT7        7'b0000000
 `define AND              3'b111
 `define AND_FUNCT7       7'b0000000
+/* - M Standard Extension - */
+`define MULDIV_FUNCT7    7'b0000001
+`define MUL              3'b000
+`define MULH             3'b001
+`define MULHSU           3'b010
+`define MULHU            3'b011
+`define DIV              3'b100
+`define DIVU             3'b101
+`define REM              3'b110
+`define REMU             3'b111
+
 /* ---------------- B-type ---------------- */
 `define BEQ              3'b000
 `define BNE              3'b001
@@ -197,6 +210,16 @@
 `define SRA_ID           {`SRA_FUNCT7, `SRA, `OP}
 `define OR_ID            {`OR_FUNCT7, `OR, `OP}
 `define AND_ID           {`AND_FUNCT7, `AND, `OP}
+/* - M Standard Extension ID - */
+`define MUL_ID              {`MULDIV_FUNCT7, `MUL, `OP}
+`define MULH_ID             {`MULDIV_FUNCT7, `MULH, `OP}
+`define MULHSU_ID           {`MULDIV_FUNCT7, `MULHSU, `OP}
+`define MULHU_ID            {`MULDIV_FUNCT7, `MULHU, `OP}
+`define DIV_ID              {`MULDIV_FUNCT7, `DIV, `OP}
+`define DIVU_ID             {`MULDIV_FUNCT7, `DIVU, `OP}
+`define REM_ID              {`MULDIV_FUNCT7, `REM, `OP}
+`define REMU_ID             {`MULDIV_FUNCT7, `REMU, `OP}
+
 /* ---------------- B-type ID ---------------- */
 `define BEQ_ID           {`FUN7_NONE, `BEQ, `BRANCH}
 `define BNE_ID           {`FUN7_NONE, `BNE, `BRANCH}

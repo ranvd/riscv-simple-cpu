@@ -35,7 +35,7 @@ module forwarding_unit (
     output reg forward_rs1_we_to_branch,
     output reg forward_rs2_we_to_branch 
 );
-
+    /* forward exe or mem stage value to rs1. The priority of exe stage is higher. */
     always @(*)begin
         // check exe rs1
         if (id_exe_rs1_addr != 0 && id_exe_rs1_addr == exe_mem_rd_addr && (id_exe_rs1_re & exe_mem_rd_we) && !exe_mem_mem_re) begin
@@ -49,6 +49,7 @@ module forwarding_unit (
         end
     end
 
+    /* forward exe or mem stage value to rs2. The priority of exe stage is higher. */
     always @(*) begin // check exe rs2
         if (id_exe_rs2_addr != 0 && id_exe_rs2_addr == exe_mem_rd_addr && (id_exe_rs2_re & exe_mem_rd_we) && !exe_mem_mem_re) begin
             forward_rs2_we_to_exe = `On;
@@ -61,6 +62,7 @@ module forwarding_unit (
         end
     end
 
+    /* forward exe value to branch rs1 value, if needed */
     always @(*)begin
         // check id rs1
         if (id_rs1_addr != 0 && id_rs1_addr == exe_mem_rd_addr && (id_rs1_re & exe_mem_rd_we) && !exe_mem_mem_re) begin
@@ -71,6 +73,7 @@ module forwarding_unit (
         end
     end
 
+    /* forward exe value to branch rs2 value, if needed */ 
     always @(*) begin
         // check id rs2
         if (id_rs2_addr != 0 && id_rs2_addr == exe_mem_rd_addr && (id_rs2_re & exe_mem_rd_we) && !exe_mem_mem_re) begin

@@ -1,7 +1,8 @@
 #!/bin/bash
 
-for f in $(ls -I "*.dump" ./rv32ui)
+dir="./rv32um"
+for f in $(ls -I "*.dump" $dir)
 do
-    riscv64-unknown-elf-objcopy -O binary ./rv32ui/$f ./rv32ui/$f.bin
+    riscv64-unknown-elf-objcopy -O binary ./$dir/$f ./$dir/$f.bin
     echo $f.bin
 done

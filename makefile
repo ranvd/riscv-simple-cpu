@@ -15,6 +15,7 @@ READELF = ${CROSS_COMPILE}readelf
 
 MODULE_PATH1 = core
 MODULE_PATH2 = core/inst_idfr
+MODULE_PATH3 = core/M_extend
 
 FILE = sim_core.cpp \
 			sim_mem.cpp \
@@ -30,9 +31,11 @@ CUSTOM_PATH = testbench/self_test
 CC_FILE = $(wildcard $(CUSTOM_PATH)/*.S)
 CC_OUT_FILE = $(patsubst %.S, %.bin, $(CC_FILE))
 
+.DEFAULT_GOAL: verilate
 .PHONY : verilate
 verilate :
-	verilator -y ${MODULE_PATH1} -y ${MODULE_PATH2} -Mdir ${SIM_DIR} -cc --exe --build ${FILE} ${CONF} --trace
+	verilator -y ${MODULE_PATH1} -y ${MODULE_PATH2} -y ${MODULE_PATH3} \
+	-Mdir ${SIM_DIR} -cc --exe --build ${FILE} ${CONF} --trace
 
 .PHONY := custom_file
 custom_file : $(CC_OUT_FILE)
@@ -44,10 +47,10 @@ custom_file : $(CC_OUT_FILE)
 %.elf : %.S
 	${CC} ${CFLAGS} $^ -o $@
 
-testFile = test_1.bin
+testFile = ./$(CUSTOM_PATH)/test_1.bin
 .PHONY : custom_test
 custom_test :
-	./$(SIM_DIR)/VCore ./$(CUSTOM_PATH)/$(testFile)
+	./$(SIM_DIR)/VCore $(testFile)
 
 .PHONY : disassemble
 disassemble :

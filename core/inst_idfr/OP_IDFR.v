@@ -10,44 +10,84 @@ module OP_IDFR (
 );
     always @(*) begin
         if (ce == `On) begin
-            case (funct3)
-                `ADD, `SUB : begin
-                    if (funct7 == `ADD_FUNCT7) begin
-                        instr_id = `ADD_ID;
-                    end else if (funct7 == `SUB_FUNCT7) begin
-                        instr_id = `SUB_ID;
-                    end else begin
-                        instr_id = `NONE_ID;
-                    end
+            case (funct7)
+                `SUB_FUNCT7, `SRA_FUNCT7: begin
+                    case (funct3)
+                        `SUB : begin
+                            instr_id = `SUB_ID;
+                        end 
+                        `SRA : begin
+                            instr_id = `SRA_ID;
+                        end
+                        default: begin
+                            instr_id = `NONE_ID;
+                        end
+                    endcase
                 end
-                `SLL : begin
-                    instr_id = `SLL_ID;
+                `ADD_FUNCT7, `SLL_FUNCT7, `SLT_FUNCT7, `SLTU_FUNCT7, 
+                `XOR_FUNCT7, `SRL_FUNCT7, `OR_FUNCT7, `AND_FUNCT7: begin
+                    case (funct3)
+                        `ADD : begin
+                            instr_id = `ADD_ID;
+                        end
+                        `SLL : begin
+                            instr_id = `SLL_ID;
+                        end
+                        `SLT : begin
+                            instr_id = `SLT_ID;
+                        end
+                        `SLTU : begin
+                            instr_id = `SLTU_ID;
+                        end
+                        `XOR : begin
+                            instr_id = `XOR_ID;
+                        end
+                        `SRL : begin
+                            instr_id = `SRL_ID;
+                        end
+                        `OR : begin
+                            instr_id = `OR_ID;
+                        end
+                        `AND : begin
+                            instr_id = `AND_ID;
+                        end
+                        default: begin
+                            instr_id = `NONE_ID;
+                        end
+                    endcase
                 end
-                `SLT : begin
-                    instr_id = `SLT_ID;
+                `MULDIV_FUNCT7: begin
+                    case (funct3)
+                        `MUL : begin
+                            instr_id = `MUL_ID;
+                        end
+                        `MULH : begin
+                            instr_id = `MULH_ID;
+                        end
+                        `MULHSU : begin
+                            instr_id = `MULHSU_ID;
+                        end
+                        `MULHU : begin
+                            instr_id = `MULHU_ID;
+                        end
+                        `DIV : begin
+                            instr_id = `DIV_ID;
+                        end
+                        `DIVU : begin
+                            instr_id = `DIVU_ID;
+                        end
+                        `REM : begin
+                            instr_id = `REM_ID;
+                        end
+                        `REMU : begin
+                            instr_id = `REMU_ID;
+                        end
+                        default:begin
+                            instr_id = `NONE_ID;
+                        end 
+                    endcase
                 end
-                `SLTU : begin
-                    instr_id = `SLTU_ID;
-                end
-                `XOR : begin
-                    instr_id = `XOR_ID;
-                end
-                `SRL, `SRA : begin
-                    if (funct7 == `SRL_FUNCT7) begin
-                        instr_id = `SRL_ID;
-                    end else if (funct7 == `SRA_FUNCT7) begin
-                        instr_id = `SRA_ID;
-                    end else begin
-                        instr_id = `NONE_ID;
-                    end
-                end
-                `OR : begin
-                    instr_id = `OR_ID;
-                end
-                `AND: begin
-                    instr_id = `AND_ID;
-                end
-                default: begin
+                default : begin
                     instr_id = `NONE_ID;
                 end
             endcase
