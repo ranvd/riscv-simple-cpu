@@ -10,7 +10,7 @@ gtkwave == v3.3.104
 * [gtkwave](https://gtkwave.sourceforge.net/) is the tool for inspect the signal value. By using this, you can easiy observe the signal and check if there are some unexpect signals.
 
 ## Accepted Instruction
-I support rv32im instruction, expect the `FENCE` in standard instruction. The standard testing code is in `testbench/`. The testing code is accessed from [riscv github](https://github.com/riscv-software-src/riscv-tests).
+I support rv32im instruction, expect the `FENCE` in standard instruction. The standard testing code is in `testbench/`. The testing code is from [riscv github](https://github.com/riscv-software-src/riscv-tests).
 
 ## Usage
 
