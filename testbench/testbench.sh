@@ -14,7 +14,5 @@ do
         echo -e "$GREEN$file : PASS$RESET"
     else
         echo -e "$RED$file : FAIL$RESET"
-        # exit 1
     fi
 done
-# echo "PASS All"
