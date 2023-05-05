@@ -1,5 +1,6 @@
 .vscode
 gtkwave*
 xpack*
+wave.vcd
 obj_dir/
 # testbench/rv32ui

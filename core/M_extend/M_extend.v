@@ -17,13 +17,17 @@ module M_extend (
     reg [`GPR_WIDTH*2-1:0] mul_result;
     reg [`GPR_WIDTH*2-1:0] mul_result_buffer;
     reg [`GPR_WIDTH-1:0] div_result;
+    reg [`GPR_WIDTH-1:0] rem_result;
     reg [1:0] status;
     reg [1:0] Mstatus;
     reg [1:0] Dstatus;
+    reg [1:0] Rstatus;
     reg Mready;
     reg Dready;
+    reg Rready;
     reg Mce;
     reg Dce;
+    reg Rce;
 
     always @(*) begin
         case (instr_id_i)
@@ -32,18 +36,28 @@ module M_extend (
             ready_o = Mready;
             Mce = ce_i;
             Dce = `Off;
+            Rce = `Off;
         end
         `DIV_ID, `DIVU_ID: begin
             status = Dstatus;
             ready_o = Dready;
             Mce = `Off;
             Dce = ce_i;
+            Rce = `Off;
+        end
+        `REM_ID, `REMU_ID: begin
+            status = Rstatus;
+            ready_o = Rready;
+            Mce = `Off;
+            Dce = `Off;
+            Rce = ce_i;
         end
         default : begin
             status = Mstatus;
             ready_o = Mready;
             Mce = `Off;
             Dce = `Off;
+            Rce = `Off;
         end
         endcase
     end
@@ -51,7 +65,7 @@ module M_extend (
     always @(*) begin
         if (status == 2'b11) begin
             case (instr_id_i)
-            `MUL_ID, `MULH_ID: begin
+            `MUL_ID, `MULH_ID, `DIV_ID, `REM_ID: begin
                 if (rs1_val_i < 0)begin
                     rs1_val = ~rs1_val_i + 1;
                     rs1_comp = `On;
@@ -78,23 +92,6 @@ module M_extend (
                 end
                 rs2_val = rs2_val_i;
                 rs2_comp = `Off;
-            end
-            `DIV_ID: begin
-                if (rs1_val_i < 0)begin
-                    rs1_val = ~rs1_val_i + 1;
-                    rs1_comp = `On;
-                end else begin
-                    rs1_val = rs1_val_i;
-                    rs2_comp = `Off;
-                end
-
-                if (rs2_val_i < 0)begin
-                    rs2_val = ~rs2_val_i + 1;
-                    rs2_comp = `On;
-                end else begin
-                    rs2_val = rs2_val_i;
-                    rs2_comp = `Off;
-                end
             end
             default: begin
                 rs2_val = rs2_val_i;
@@ -126,6 +123,16 @@ module M_extend (
         .status_o(Dstatus)
     );
 
+    rem_32 rem_32_1(
+        .ce_i(Rce),
+        .clk_i(clk_i),
+        .rs1_i(rs1_val),
+        .rs2_i(rs2_val),
+        .result_o(rem_result),
+        .ready_o(Rready),
+        .status_o(Rstatus)
+    );
+
     always @(*) begin
         case (instr_id_i)
             `MUL_ID : begin
@@ -155,7 +162,9 @@ module M_extend (
                 result_o = mul_result[`GPR_WIDTH*2-1:`GPR_WIDTH];
             end
             `DIV_ID : begin
-                if (rs1_comp ^ rs2_comp) begin
+                if (rs2_val == `GPR_WIDTH'b0)begin
+                    result_o = div_result;
+                end else if (rs1_comp ^ rs2_comp) begin
                     result_o = ~div_result + 1;
                 end else begin
                     result_o = div_result;
@@ -165,10 +174,14 @@ module M_extend (
                 result_o = div_result;
             end
             `REM_ID : begin
-                result_o = 32'b0;
+                if (rs1_comp) begin
+                    result_o = (~rem_result[`GPR_WIDTH-1:0] + 1);
+                end else begin
+                    result_o = rem_result[`GPR_WIDTH-1:0];
+                end
             end
             `REMU_ID : begin
-                result_o = 32'b0;
+                result_o = rem_result;
             end
             default: begin
                 result_o = 32'b0;
