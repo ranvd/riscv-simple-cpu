@@ -13,7 +13,8 @@ module MEM (
     output reg [`GPR_ADDR_SPACE-1:0] rd_addr_o,
     output reg rd_we_o
 );
-    reg[`CACHE_DATA_WIDTH-1:0] data_cache_o;
+    reg [`DATA_WIDTH-1:0] data_cache_o;
+    reg [`GPR_WIDTH-1:0] w_val;
 
     cache data_cache1(
         .re_i(mem_re_i),
@@ -27,6 +28,7 @@ module MEM (
 
     assign rd_we_o = rd_we_i;
     assign rd_addr_o = rd_addr_i;
+
     
     always @(*) begin
         if(mem_re_i) begin
@@ -53,7 +55,22 @@ module MEM (
         end else begin
             rd_val_o = alu_val_i;
         end
-
     end
+
+    // always @(*) begin
+    //     if (mem_we_i) begin
+    //         case (mem_mode_i)
+    //         `SB_FUN3: begin
+
+    //         end
+    //         `SH_FUN3: begin
+    //         end
+    //         `SW_FUN3: begin
+    //         end
+    //         default : begin
+    //         end
+    //         endcase
+    //     end
+    // end
 
 endmodule

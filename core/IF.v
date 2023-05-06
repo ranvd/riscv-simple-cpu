@@ -20,11 +20,11 @@ module IF (
     output reg anomaly_o
 );
     wire [`SYS_ADDR_SPACE-1:0] pc_wire;
-    wire [`CACHE_DATA_WIDTH-1:0] w_data_zero;
+    wire [`DATA_WIDTH-1:0] w_data_zero;
     wire re_wire; // assume from control unit
     wire we_wire;
 
-    assign w_data_zero = `CACHE_DATA_WIDTH'h0;
+    assign w_data_zero = `DATA_WIDTH'h0;
     assign re_wire = !rst_i; // reset enable = read disable
     assign we_wire = 1'b0;
     

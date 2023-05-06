@@ -54,11 +54,11 @@ custom_test :
 
 .PHONY : disassemble
 disassemble :
-	@${OBJDUMP} -S ./$(CUSTOM_PATH)/$(testFile)
+	@${OBJDUMP} -S $(testFile)
 
 .PHONY : hex
 hex :
-	@hexdump -e '"%08_ax " 1/4 "%08x" "\n"' ./$(CUSTOM_PATH)/$(testFile)
+	@hexdump -e '"%08_ax " 1/4 "%08x" "\n"' $(testFile)
 
 
 .PHONY : analyze

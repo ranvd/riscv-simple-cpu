@@ -2,7 +2,7 @@
 
 path="../sim/obj_dir/"
 exec="VCore"
-bench="rv32um"
+bench="rv32ui"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
