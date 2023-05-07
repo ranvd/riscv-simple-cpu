@@ -4,13 +4,23 @@
 module Core (
     input wire clk_i,
     input wire rst_i,
-    output wire anomaly_o /*verilator public*/
+    output wire anomaly_o, 
+
+    // to bus
+    output reg req_o,
+    output reg [`SYS_ADDR_SPACE-1:0] req_addr,
+    output reg read_write,
+    output reg [`DATA_WIDTH-1:0] wdata,
+    input reg [`DATA_WIDTH-1:0] rdata,
+    input wire gnt /*verilator public*/
 );
     wire [`INST_WIDTH-1:0] if_id_instr_i;
     wire [`SYS_ADDR_SPACE-1:0] if_id_pc_i;
     wire if_stall_i;  // from hazard detect unit
     wire [`SYS_ADDR_SPACE-1:0] if_pc_val_i; // from branch unit
     wire if_pc_we_i;  // from branch unit
+
+    wire icache_miss;
 
     IF IF1(
         .clk_i        (clk_i),
@@ -24,7 +34,11 @@ module Core (
         // to IF_ID
         .inst_o       (if_id_instr_i),
         .pc_o         (if_id_pc_i),
-        .anomaly_o    (anomaly_o)
+        .anomaly_o    (anomaly_o),
+
+        .icache_data  (rdata),
+        .icache_we    (icache_we),
+        .req_stall_i  (icache_miss)
     );
 
     wire [1:0] if_id_mode_i;  // used for hazard detection unit
@@ -265,9 +279,14 @@ module Core (
     wire mem_mem_we_i;
     wire [`funct3_width-1:0] mem_mem_mode_i;
 
+    // from hazard detection unit
+    wire [1:0] exe_mem_mode_i;
+
     EXE_MEM EXE_MEM1(
         .clk_i         (clk_i),
 
+        // form hazard detection unit
+        .mode_i        (exe_mem_mode_i),
         // from EXE
         .alu_val_i     (exe_mem_alu_val_i),
         .rd_addr_i     (exe_mem_rd_addr_i),
@@ -294,6 +313,8 @@ module Core (
     wire [`GPR_ADDR_SPACE-1:0] mem_wb_rd_addr_i;
     wire mem_wb_rd_we_i;
 
+    wire dcache_read_miss;
+
     MEM MEM1(
         // from EXE_MEM
         .alu_val_i     (mem_alu_val_i),
@@ -307,7 +328,13 @@ module Core (
         // to MEM_WB
         .rd_val_o      (mem_wb_rd_val_i),
         .rd_addr_o     (mem_wb_rd_addr_i),
-        .rd_we_o       (mem_wb_rd_we_i)
+        .rd_we_o       (mem_wb_rd_we_i),
+
+        // from RAM(bus)
+        .dcache_data(rdata),
+        .dcache_we(dcache_we),
+        // to Hazard detection
+        .read_err_o(dcache_read_miss)
     );
 
     wire [`GPR_WIDTH-1:0] wb_rd_val_i;
@@ -393,6 +420,11 @@ module Core (
     hazard_detect_unit hazard_detect_unit1(
         // from branch unit
         .pc_we            (if_pc_we_i),
+
+        // from cache, cache miss
+        .icache_miss      (icache_miss),
+        .dcache_miss      (dcache_read_miss),
+
         // from ID
         .id_instr_id      (id_exe_instr_id_i),
         .id_rs1_addr      (regfile_rs1_addr_i),
@@ -417,6 +449,9 @@ module Core (
         .if_id_mode       (if_id_mode_i),
         // to ID_EXE
         .id_exe_mode      (id_exe_mode_i),
+        // to EXE_MEM
+        .exe_mem_mode     (exe_mem_mode_i),
+
         // to IF
         .if_stall         (if_stall_i),
         // to all unit who acquire hazard
@@ -447,4 +482,39 @@ module Core (
         .pc_o                (if_pc_val_i),
         .pc_we               (if_pc_we_i)
     );
+
+
+    reg icache_we;
+    reg dcache_we;
+    /* Communicate with bus */
+    always @(*) begin
+        if (dcache_read_miss)begin
+            req_o = `On;
+            req_addr = if_id_pc_i;
+        end else if (icache_miss) begin
+            req_o = `On;
+            req_addr = mem_alu_val_i;
+        end else begin
+            req_o = `Off;
+            req_addr = 0;
+        end
+
+        if(gnt) begin
+            if (dcache_read_miss) begin
+                dcache_we = `On;
+                icache_we = `Off;
+            end else if (icache_miss) begin
+                dcache_we = `Off;
+                icache_we = `On;
+            end else begin
+                dcache_we = `Off;
+                icache_we = `Off;
+            end
+        end else begin
+            dcache_we = `Off;
+            icache_we = `Off;
+        end
+    end
+
+
 endmodule

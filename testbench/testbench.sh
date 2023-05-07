@@ -1,7 +1,7 @@
 #!/bin/bash
 
 path="../sim/obj_dir/"
-exec="VCore"
+exec="VVpcb"
 bench="rv32ui"
 
 RED='\033[0;31m'

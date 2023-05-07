@@ -1,4 +1,5 @@
 /* verilator lint_off LATCH */
+/* verilator lint_off UNOPTFLAT */
 `include "conf_general_define.v"
 
 module cache #(
@@ -14,7 +15,9 @@ module cache #(
     input wire [`DATA_WIDTH-1:0] w_data_i,
     input wire [`funct3_width-1:0] mem_mode_i,
 
-    output reg[`DATA_WIDTH-1:0] data_o
+    output reg[`DATA_WIDTH-1:0] data_o,
+    output reg read_err_o
+    // output reg write_err_o
     // output reg[`DATA_WIDTH-1:0] wdata_o
 );
     parameter integer cache_width = 2 + tag_width + (2**word_offset) * 8; //52
@@ -53,6 +56,7 @@ module cache #(
     always @(*) begin
         if (re_i == `Off) begin
             data_o = 32'h0;
+            read_err_o = `Off;
         end else begin
             case (r_addr_i[1:0])
                 2'b00: begin
@@ -60,8 +64,10 @@ module cache #(
                         (cache[read_idx][2+tag_width-1:2] === read_tag))begin
 
                         data_o = cache[read_idx][cache_width-1:2+tag_width];
+                        read_err_o = `Off;
                     end else begin
                         data_o = 32'h0;
+                        read_err_o = `On;
                     end
                 end
                 2'b01: begin
@@ -69,8 +75,10 @@ module cache #(
                         (cache[read_idx][2+tag_width-1:2] === read_tag) & (cache[read_idx+1][2+tag_width-1:2] === read_tag))begin
 
                         data_o = {cache[read_idx+1][2+tag_width+7:2+tag_width],cache[read_idx][cache_width-1 : 2+tag_width+8]};
+                        read_err_o = `Off;
                     end else begin
                         data_o = 32'h0;
+                        read_err_o = `On;
                     end
                 end
                 2'b10: begin
@@ -78,8 +86,10 @@ module cache #(
                         (cache[read_idx][2+tag_width-1:2] === read_tag) & (cache[read_idx+1][2+tag_width-1:2] === read_tag))begin
 
                         data_o = {cache[read_idx+1][2+tag_width+15:2+tag_width],cache[read_idx][cache_width-1 : 2+tag_width+16]};
+                        read_err_o = `Off;
                     end else begin
                         data_o = 32'h0;
+                        read_err_o = `On;
                     end
                 end
                 2'b11: begin
@@ -87,12 +97,15 @@ module cache #(
                         (cache[read_idx][2+tag_width-1:2] === read_tag) & (cache[read_idx+1][2+tag_width-1:2] === read_tag))begin
 
                         data_o = {cache[read_idx+1][2+tag_width+23:2+tag_width],cache[read_idx][cache_width-1 : 2+tag_width+24]};
+                        read_err_o = `Off;
                     end else begin
                         data_o = 32'h0;
+                        read_err_o = `On;
                     end
                 end 
                 default: begin
                     data_o = 32'h0;
+                    read_err_o = `Off;
                 end
             endcase
         end

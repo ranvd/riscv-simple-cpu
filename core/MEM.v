@@ -11,19 +11,37 @@ module MEM (
     // to MEM_WB
     output reg [`GPR_WIDTH-1:0] rd_val_o,
     output reg [`GPR_ADDR_SPACE-1:0] rd_addr_o,
-    output reg rd_we_o
+    output reg rd_we_o,
+
+    // from RAM
+    input wire [`DATA_WIDTH-1:0] dcache_data,
+    input wire dcache_we,
+    // to Hazard detection
+    output wire read_err_o
 );
     reg [`DATA_WIDTH-1:0] data_cache_o;
     reg [`GPR_WIDTH-1:0] w_val;
+    reg mem_we;
+    reg [`DATA_WIDTH-1:0] mem_wdata;
+
+    always @(*) begin
+        mem_we = dcache_we | mem_we_i;
+        if (dcache_we) begin
+            mem_wdata = dcache_data;
+        end else begin
+            mem_wdata = rs2_val_i;
+        end
+    end
 
     cache data_cache1(
         .re_i(mem_re_i),
-        .we_i(mem_we_i),
+        .we_i(mem_we),
         .r_addr_i(alu_val_i),
         .w_addr_i(alu_val_i),
-        .w_data_i(rs2_val_i),
+        .w_data_i(mem_wdata),
         .mem_mode_i(mem_mode_i),
-        .data_o(data_cache_o)
+        .data_o(data_cache_o),
+        .read_err_o(read_err_o)
     );
 
     assign rd_we_o = rd_we_i;

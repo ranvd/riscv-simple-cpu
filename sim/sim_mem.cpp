@@ -4,8 +4,9 @@
 #include <iostream>
 #include <string>
 
-#include "VCore.h"
-#include "VCore__Syms.h"
+// #include "VCore.h"
+#include "VVpcb.h"
+#include "VVpcb__Syms.h"
 #include "conf_core.h"
 #include "verilated_vcd_c.h"
 
@@ -16,7 +17,7 @@ static inline T from_le(T n) {
     return n;
 }
 
-void sim_mem_write(VCore_cache *cache, VL_IN64(addr, 47, 0), size_t length,
+void sim_mem_write(VVpcb_cache *cache, VL_IN64(addr, 47, 0), size_t length,
                    const void *bytes) {
     // Endian transfer
     // IF the host is Big Endian
@@ -31,7 +32,7 @@ void sim_mem_write(VCore_cache *cache, VL_IN64(addr, 47, 0), size_t length,
 #endif
 }
 
-void sim_mem_load_bin(VCore_cache *cache, std::string fn) {
+void sim_mem_load_bin(VVpcb_cache *cache, std::string fn) {
     std::ifstream bpfs(fn, std::ios_base::binary | std::ios::ate);
     int f_length = bpfs.tellg();
     // std::cout << "file size: " << f_length << "\n";
@@ -44,7 +45,7 @@ void sim_mem_load_bin(VCore_cache *cache, std::string fn) {
     bpfs.close();
 }
 
-uint32_t sim_mem_read(VCore_cache *cache, uint32_t addr) {
+uint32_t sim_mem_read(VVpcb_cache *cache, uint32_t addr) {
     uint32_t val;
     cache->readByte(addr, val);
     return val;

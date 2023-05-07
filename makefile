@@ -16,10 +16,14 @@ READELF = ${CROSS_COMPILE}readelf
 MODULE_PATH1 = core
 MODULE_PATH2 = core/inst_idfr
 MODULE_PATH3 = core/M_extend
+MODULE_PATH4 = bus/
+MODULE_PATH5 = perip/
 
-FILE = sim_core.cpp \
+FILE = sim_pcb.cpp \
 			sim_mem.cpp \
-			Core.v \
+			Vpcb.v \
+			conf_general_define.v \
+			conf_riscv_spec.v \
 
 SIM_DIR = sim/obj_dir
 CONF = config.vlt
@@ -35,6 +39,7 @@ CC_OUT_FILE = $(patsubst %.S, %.bin, $(CC_FILE))
 .PHONY : verilate
 verilate :
 	verilator -y ${MODULE_PATH1} -y ${MODULE_PATH2} -y ${MODULE_PATH3} \
+	-y ${MODULE_PATH4} -y ${MODULE_PATH5} \
 	-Mdir ${SIM_DIR} -cc --exe --build ${FILE} ${CONF} --trace
 
 .PHONY := custom_file

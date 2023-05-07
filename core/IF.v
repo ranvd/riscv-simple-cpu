@@ -17,14 +17,20 @@ module IF (
     // to IF_ID
     output reg[`INST_WIDTH-1:0] inst_o,
     output reg[`SYS_ADDR_SPACE-1:0] pc_o,
-    output reg anomaly_o
+    output reg anomaly_o,
+
+    // from RAM
+    input wire [`DATA_WIDTH-1:0] icache_data,
+    input wire icache_we,
+    // to hazard detect unit
+    output reg req_stall_i
 );
     wire [`SYS_ADDR_SPACE-1:0] pc_wire;
-    wire [`DATA_WIDTH-1:0] w_data_zero;
+    // wire [`DATA_WIDTH-1:0] icache_data;
     wire re_wire; // assume from control unit
     wire we_wire;
 
-    assign w_data_zero = `DATA_WIDTH'h0;
+    // assign icache_data = `DATA_WIDTH'h0;
     assign re_wire = !rst_i; // reset enable = read disable
     assign we_wire = 1'b0;
     
@@ -52,15 +58,17 @@ module IF (
     //         pc_o = pc_wire;
     //     end
     // end
+    wire tmp;
 
     cache instr_cache1(
         .re_i(re_wire),
-        .we_i(`Off),
+        .we_i(icache_we),
         .r_addr_i(pc_o),
         .w_addr_i(pc_o),
-        .w_data_i(w_data_zero),
-        .mem_mode_i(`LW_FUN3),
-        .data_o(inst_o)
+        .w_data_i(icache_data),
+        .mem_mode_i(`SW_FUN3),
+        .data_o(inst_o),
+        .read_err_o(tmp)
     );
     
 endmodule

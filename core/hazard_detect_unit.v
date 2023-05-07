@@ -2,6 +2,10 @@ module hazard_detect_unit (
     // from branch unit
     input wire pc_we,
 
+    // from cache, cache miss
+    input wire icache_miss,
+    input wire dcache_miss,
+
     // from ID
     input wire [`INST_ID_LEN-1:0] id_instr_id,
     input wire [`GPR_ADDR_SPACE-1:0] id_rs1_addr,
@@ -30,7 +34,7 @@ module hazard_detect_unit (
     output reg [1:0] id_exe_mode,
 
     // to EXE_MEM
-    // output reg [1:0] exe_mem_mode,
+    output reg [1:0] exe_mem_mode,
 
     // to IF
     output reg if_stall,
@@ -129,6 +133,17 @@ module hazard_detect_unit (
     reg if_stall_4;
     reg [`Hazard_Signal_Width-1:0] signal_cycle_4;
 
+    reg [1:0] if_id_mode_5;
+    reg [1:0] id_exe_mode_5;
+    reg if_stall_5;
+    reg [`Hazard_Signal_Width-1:0] signal_cycle_5;
+
+    reg [1:0] if_id_mode_6;
+    reg [1:0] id_exe_mode_6;
+    reg if_stall_6;
+    reg [`Hazard_Signal_Width-1:0] signal_cycle_6;
+    // reg exe_mem_mode;
+
     always @(*) begin
         if (rs1_load_harzard || rs2_load_harzard) begin
             if_id_mode_1 = `Stall;
@@ -176,6 +191,32 @@ module hazard_detect_unit (
             id_exe_mode_4 = `Stall;
             if_stall_4 = `On;
             signal_cycle_4 = 1;
+        end
+
+        if (icache_miss) begin
+            if_id_mode_5 = `Normal;
+            id_exe_mode_5 = `Normal;
+            if_stall_5 = `On;
+            signal_cycle_5 = 1;
+        end else begin
+            if_id_mode_5 = `Normal;
+            id_exe_mode_5 = `Normal;
+            if_stall_5 = `Off;
+            signal_cycle_5 = 0;
+        end
+
+        if (dcache_miss) begin
+            if_id_mode_6 = `Stall;
+            id_exe_mode_6 = `Stall;
+            exe_mem_mode = `Stall;
+            if_stall_6 = `On;
+            signal_cycle_6 = 1;
+        end else begin
+            if_id_mode_6 = `Normal;
+            id_exe_mode_6 = `Normal;
+            exe_mem_mode = `Normal;
+            if_stall_6 = `Off;
+            signal_cycle_6 = 0;
         end
     end
 
